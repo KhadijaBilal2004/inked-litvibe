@@ -2,31 +2,31 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
 class AppTheme {
-  static ThemeData get darkTheme {
+  static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       primaryColor: AppColors.primaryAccent,
-      scaffoldBackgroundColor: AppColors.bgDark,
+      scaffoldBackgroundColor: AppColors.bgLight,
       
       // Color Scheme
-      colorScheme: ColorScheme.dark(
+      colorScheme: ColorScheme.light(
         primary: AppColors.primaryAccent,
         secondary: AppColors.secondaryAccent,
-        tertiary: AppColors.accentCyan,
-        background: AppColors.bgDark,
+        tertiary: AppColors.accentGold,
+        background: AppColors.bgLight,
         surface: AppColors.bgCard,
         error: AppColors.error,
-        onPrimary: AppColors.textPrimary,
-        onSecondary: AppColors.textPrimary,
+        onPrimary: AppColors.primaryLight,
+        onSecondary: AppColors.primaryLight,
         onBackground: AppColors.textPrimary,
         onSurface: AppColors.textPrimary,
-        onError: AppColors.textPrimary,
+        onError: AppColors.primaryLight,
       ),
       
       // App Bar Theme
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.primaryDark,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
@@ -118,8 +118,8 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryAccent,
-          foregroundColor: AppColors.textPrimary,
-          elevation: 0,
+          foregroundColor: AppColors.primaryLight,
+          elevation: 2,
           padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -134,8 +134,8 @@ class AppTheme {
       
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.secondaryAccent,
-          side: BorderSide(color: AppColors.secondaryAccent, width: 2),
+          foregroundColor: AppColors.primaryAccent,
+          side: BorderSide(color: AppColors.primaryAccent, width: 2),
           padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -149,7 +149,7 @@ class AppTheme {
       
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.secondaryAccent,
+          foregroundColor: AppColors.primaryAccent,
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           textStyle: TextStyle(
             fontSize: 14,
@@ -165,11 +165,11 @@ class AppTheme {
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.bgCardLight),
+          borderSide: BorderSide(color: AppColors.bgCardDarker),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.bgCardLight),
+          borderSide: BorderSide(color: AppColors.bgCardDarker),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -186,7 +186,7 @@ class AppTheme {
       // Card Theme
       cardTheme: CardTheme(
         color: AppColors.bgCard,
-        elevation: 8,
+        elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -195,7 +195,7 @@ class AppTheme {
       // Dialog Theme
       dialogTheme: DialogTheme(
         backgroundColor: AppColors.bgCard,
-        elevation: 16,
+        elevation: 8,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),

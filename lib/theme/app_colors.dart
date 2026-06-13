@@ -1,41 +1,41 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary Colors - Dark Aesthetic
-  static const Color primaryDark = Color(0xFF0D0221); // Deep Purple-Black
-  static const Color primaryAccent = Color(0xFF6A0572); // Rich Purple
-  static const Color secondaryAccent = Color(0xFFAB63FA); // Vibrant Purple
+  // Primary Colors - Warm Aesthetic
+  static const Color primaryLight = Color(0xFFFDFBF7); // Warm Cream
+  static const Color primaryAccent = Color(0xFFE07A5F); // Warm Terracotta
+  static const Color secondaryAccent = Color(0xFFF2CC8F); // Sunset Orange
   
   // Background Colors
-  static const Color bgDark = Color(0xFF0F0417); // Almost Black
-  static const Color bgCard = Color(0xFF1A0A2E); // Dark Purple
-  static const Color bgCardLight = Color(0xFF2D0E4E); // Lighter Purple
+  static const Color bgLight = Color(0xFFF4EFE6); // Soft Beige
+  static const Color bgCard = Color(0xFFFFFFFF); // White for cards
+  static const Color bgCardDarker = Color(0xFFEAE2D6); // Slightly darker beige
   
   // Text Colors
-  static const Color textPrimary = Color(0xFFF5F5F5); // Off-white
-  static const Color textSecondary = Color(0xFFB0B0B0); // Light Gray
-  static const Color textMuted = Color(0xFF7A7A7A); // Muted Gray
+  static const Color textPrimary = Color(0xFF3D405B); // Charcoal / Dark Blue-Gray
+  static const Color textSecondary = Color(0xFF815B5B); // Soft Brown
+  static const Color textMuted = Color(0xFFAFAFAF); // Muted Gray
   
   // Accent Colors
-  static const Color accentGold = Color(0xFFD4AF37); // Gold
-  static const Color accentPink = Color(0xFFFF006E); // Vibrant Pink
-  static const Color accentCyan = Color(0xFF00F5FF); // Cyan
+  static const Color accentGold = Color(0xFFE9C46A); // Warm Gold
+  static const Color accentRed = Color(0xFFE63946); // Muted Red (Nope/Error)
+  static const Color accentGreen = Color(0xFF2A9D8F); // Soft Green (Like/Success)
   
   // Status Colors
-  static const Color success = Color(0xFF00D084); // Green
-  static const Color error = Color(0xFFFF006E); // Pink/Red
-  static const Color warning = Color(0xFFFFA500); // Orange
-  static const Color info = Color(0xFF00B4D8); // Blue
+  static const Color success = Color(0xFF2A9D8F); // Green
+  static const Color error = Color(0xFFE63946); // Red
+  static const Color warning = Color(0xFFE9C46A); // Gold/Yellow
+  static const Color info = Color(0xFF8ECAE6); // Light Blue
   
-  // Mood Colors
+  // Mood Colors (Warm and Cozy variants)
   static const Map<String, Color> moodColors = {
-    'happy': Color(0xFFFFD700),        // Gold
-    'sad': Color(0xFF4A90E2),          // Blue
-    'peaceful': Color(0xFF7ED321),     // Green
-    'thrilled': Color(0xFFFF006E),     // Pink
-    'thoughtful': Color(0xFFAB63FA),   // Purple
-    'adventurous': Color(0xFFFF8C42),  // Orange
-    'melancholic': Color(0xFF9B59B6),  // Deep Purple
-    'romantic': Color(0xFFFF69B4),     // Hot Pink
+    'happy': Color(0xFFF2CC8F),        // Sunset Orange
+    'sad': Color(0xFF8ECAE6),          // Light Blue
+    'peaceful': Color(0xFF81B29A),     // Soft Mint Green
+    'thrilled': Color(0xFFE07A5F),     // Terracotta
+    'thoughtful': Color(0xFF3D405B),   // Charcoal
+    'adventurous': Color(0xFFE63946),  // Muted Red
+    'melancholic': Color(0xFF815B5B),  // Soft Brown
+    'romantic': Color(0xFFF4A261),     // Soft Peach
   };
 }

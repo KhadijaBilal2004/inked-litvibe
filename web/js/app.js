@@ -27,25 +27,17 @@ class AppController {
 
         // DOM Elements - Discovery Deck
         this.cardElement = document.getElementById('active-card');
-        this.cardInner = this.cardElement.querySelector('.card-inner');
-        this.quoteText = this.cardElement.querySelector('.quote-text');
-        this.bookCover = this.cardElement.querySelector('.book-cover');
-        this.bookTitle = this.cardElement.querySelector('.book-title');
-        this.bookAuthor = this.cardElement.querySelector('.book-author');
-        this.bookRating = this.cardElement.querySelector('.book-rating');
-        this.bookPages = this.cardElement.querySelector('.book-pages');
+        this.cardInner = this.cardElement ? this.cardElement.querySelector('.card-inner') : null;
+        this.quoteText = this.cardElement ? this.cardElement.querySelector('.quote-text') : null;
+        this.bookCover = this.cardElement ? this.cardElement.querySelector('.book-cover') : null;
+        this.bookTitle = this.cardElement ? this.cardElement.querySelector('.book-title') : null;
+        this.bookAuthor = this.cardElement ? this.cardElement.querySelector('.book-author') : null;
+        this.bookRating = this.cardElement ? this.cardElement.querySelector('.book-rating') : null;
+        this.bookPages = this.cardElement ? this.cardElement.querySelector('.book-pages') : null;
         this.activeMoodTitle = document.getElementById('active-mood-title');
-
-        // DOM Elements - Command Center
-        this.terminalOutput = document.getElementById('terminal-output');
-        this.metricTime = document.getElementById('metric-time');
-        this.metricStrategy = document.getElementById('metric-strategy');
-        this.metricDocs = document.getElementById('metric-docs');
-        this.indexToggle = document.getElementById('toggle-mood-index');
 
         // Initialize App
         this.bindEvents();
-        this.bindDatabaseEvents();
         this.runSplashSequence();
     }
 
@@ -86,33 +78,39 @@ class AppController {
 
         // Checkout Form
         document.getElementById('checkout-form').addEventListener('submit', (e) => this.handleCheckout(e));
-
-        // Index Toggler
-        this.indexToggle.addEventListener('change', (e) => {
-            const isEnabled = e.target.checked;
-            db.toggleIndex('books', 'mood');
-            db._logToConsole(`User toggled { mood: 1 } index to: ${isEnabled ? 'ON' : 'OFF'}`);
-        });
     }
 
-    bindDatabaseEvents() {
-        // Listen for internal database logs and pipe them to the visual terminal
-        window.addEventListener('dbLogEvent', (e) => this.updateCommandCenter(e.detail));
-    }
 
     // ========================================================================
     // View Navigation
     // ========================================================================
     switchView(viewName) {
-        Object.values(this.views).forEach(view => {
-            view.classList.remove('active');
-            setTimeout(() => view.classList.add('hidden'), 400); // Wait for fade out
-        });
-        
         const targetView = this.views[viewName];
+        if (!targetView) return;
+
+        // Fade out current active view
+        Object.values(this.views).forEach(view => {
+            if (view.classList.contains('active')) {
+                view.classList.remove('active');
+                // After fade-out transition, hide it
+                setTimeout(() => {
+                    if (!view.classList.contains('active')) {
+                        view.classList.add('hidden');
+                    }
+                }, 420);
+            } else {
+                view.classList.add('hidden');
+            }
+        });
+
+        // Show & fade in target view
         targetView.classList.remove('hidden');
-        // Small timeout to allow display:block to apply before adding opacity class
-        setTimeout(() => targetView.classList.add('active'), 50);
+        // Defer adding active so display:flex takes effect first
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                targetView.classList.add('active');
+            });
+        });
     }
 
     getCurrentView() {
@@ -123,15 +121,9 @@ class AppController {
     }
 
     runSplashSequence() {
-        // Simulate initial DB connection handshake
         setTimeout(() => {
-            const status = this.views.splash.querySelector('.db-status');
-            status.textContent = 'Connection Established. Syncing indices...';
-            
-            setTimeout(() => {
-                this.switchView('moodSelector');
-            }, 1500);
-        }, 1500);
+            this.switchView('moodSelector');
+        }, 2200);
     }
 
     // ========================================================================
@@ -303,54 +295,6 @@ class AppController {
         }, 800);
     }
 
-    // ========================================================================
-    // Live Database Command Center Binder
-    // ========================================================================
-    updateCommandCenter(logData) {
-        // 1. Update Terminal
-        this.appendTerminalLog(logData.message, logData.details);
-
-        // 2. Update Performance Dashboard if explain() stats are present
-        if (logData.details && logData.details.executionStats) {
-            const stats = logData.details.executionStats;
-            
-            this.metricTime.textContent = `${stats.executionTimeMillis} ms`;
-            this.metricStrategy.textContent = stats.executionStrategy;
-            this.metricDocs.textContent = stats.totalDocsExamined;
-
-            // Visual feedback: Red for COLLSCAN, Cyan for IXSCAN
-            if (stats.executionStrategy === 'COLLSCAN') {
-                this.metricStrategy.style.color = 'var(--neon-pink)';
-            } else {
-                this.metricStrategy.style.color = 'var(--neon-cyan)';
-            }
-        }
-    }
-
-    appendTerminalLog(message, details) {
-        const line = document.createElement('div');
-        line.className = 'log-line query';
-        
-        // Basic Syntax Highlighting Simulation
-        let formattedMessage = message
-            .replace(/db\./g, '<span class="code-keyword">db.</span>')
-            .replace(/\.find/g, '<span class="code-property">.find</span>')
-            .replace(/\.update/g, '<span class="code-property">.update</span>')
-            .replace(/\.insert/g, '<span class="code-property">.insert</span>')
-            .replace(/"([^"]+)"/g, '<span class="code-string">"$1"</span>');
-            
-        // Highlight collection names (books, quotes, etc)
-        ['books', 'quotes', 'user_preferences', 'transactions', 'bookstores'].forEach(col => {
-            const regex = new RegExp(`(?<=db\\.)(${col})`, 'g');
-            formattedMessage = formattedMessage.replace(regex, `<span class="code-collection">$1</span>`);
-        });
-
-        line.innerHTML = `> ${formattedMessage}`;
-        this.terminalOutput.appendChild(line);
-
-        // Scroll to bottom
-        this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
-    }
 }
 
 // Bootstrap Application

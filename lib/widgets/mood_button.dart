@@ -85,6 +85,10 @@ class MoodButton extends StatelessWidget {
       'adventurous': '🚀',
       'melancholic': '🌙',
       'romantic': '💕',
+      'mysterious': '🕯️',
+      'inspiring': '✨',
+      'nostalgic': '📜',
+      'anxious': '⚡',
     };
     return emojis[mood] ?? '📚';
   }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swipper/flutter_card_swiper.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import '../models/book.dart';
 import '../services/book_service.dart';
+import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 import '../widgets/swipe_card.dart';
@@ -58,28 +59,44 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
     }
   }
 
-  void _onCardSwipe(int previousIndex, int? currentIndex, CardSwiperDirection direction) {
-    if (direction == CardSwiperDirection.right) {
-      // Book added to favorites
-      print('Added to favorites: ${books[previousIndex].title}');
-    } else if (direction == CardSwiperDirection.left) {
-      // Book dismissed
-      print('Dismissed: ${books[previousIndex].title}');
+  void _handleSwipe(Book book, CardSwiperDirection direction) {
+    final user = LocalStorageService.instance.currentUser;
+    if (direction == CardSwiperDirection.right && user != null) {
+      LocalStorageService.instance.addToRead(user.id, book.id).catchError((error) {
+        debugPrint('Could not save to-read book: $error');
+      });
+      LocalStorageService.instance.addToFavorites(user.id, book.id).catchError((error) {
+        debugPrint('Could not save favorite book: $error');
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Added "${book.title}" to your To Read list.')),
+      );
     }
-    
+  }
+
+  bool _onCardSwipe(int previousIndex, int? currentIndex, CardSwiperDirection direction) {
+    if (previousIndex >= 0 && previousIndex < books.length) {
+      final book = books[previousIndex];
+      if (direction == CardSwiperDirection.right) {
+        _handleSwipe(book, direction);
+      }
+    }
+
     setState(() {
+      this.currentIndex = currentIndex ?? this.currentIndex;
       showQuote = false;
       currentQuote = null;
     });
+    return true;
   }
 
   void _revealBook() {
     if (books.isNotEmpty && currentIndex < books.length) {
       final book = books[currentIndex];
       final quotes = book.quotes;
-      
+
       setState(() {
-        currentQuote = quotes.isNotEmpty 
+        currentQuote = quotes.isNotEmpty
             ? quotes[DateTime.now().millisecondsSinceEpoch % quotes.length]
             : 'A great book awaits you...';
         showQuote = true;
@@ -91,11 +108,11 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Discover Books'),
+        title: Text('Discover $widget.mood reads'),
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -135,13 +152,6 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                             controller: _cardSwiperController,
                             cardsCount: books.length,
                             onSwipe: _onCardSwipe,
-                            onIndexChanged: (index) {
-                              setState(() {
-                                currentIndex = index;
-                                showQuote = false;
-                                currentQuote = null;
-                              });
-                            },
                             cardBuilder: (context, index, horizonalThresholdPercentage, verticalThresholdPercentage) {
                               return SwipeCard(
                                 book: books[index],
@@ -153,25 +163,22 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                           ),
                         ),
                         SizedBox(height: AppConstants.paddingLarge),
-                        // Action Buttons
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            // Dismiss
                             FloatingActionButton(
                               onPressed: () {
-                                _cardSwiperController.swipeLeft();
+                                _cardSwiperController.swipe(CardSwiperDirection.left);
                               },
                               backgroundColor: AppColors.error,
-                              child: Icon(Icons.close),
+                              child: const Icon(Icons.close),
                             ),
-                            // Favorite
                             FloatingActionButton(
                               onPressed: () {
-                                _cardSwiperController.swipeRight();
+                                _cardSwiperController.swipe(CardSwiperDirection.right);
                               },
                               backgroundColor: AppColors.accentPink,
-                              child: Icon(Icons.favorite),
+                              child: const Icon(Icons.favorite),
                             ),
                           ],
                         ),

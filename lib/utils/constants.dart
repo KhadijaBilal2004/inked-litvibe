@@ -35,6 +35,10 @@ class AppConstants {
     'adventurous',
     'melancholic',
     'romantic',
+    'mysterious',
+    'inspiring',
+    'nostalgic',
+    'anxious',
   ];
   
   // Mood Descriptions
@@ -47,5 +51,9 @@ class AppConstants {
     'adventurous': 'Bold & Daring',
     'melancholic': 'Bittersweet & Haunting',
     'romantic': 'Love & Connection',
+    'mysterious': 'Dark & Intriguing',
+    'inspiring': 'Uplifting & Empowering',
+    'nostalgic': 'Warm & Reflective',
+    'anxious': 'Edgy & Suspenseful',
   };
 }

@@ -3,72 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inked (Lit Vibe) - Database Inspector Edition</title>
-    
-    <!-- Link to custom CSS -->
+    <title>Inked — Mood-Based Book Discovery</title>
+    <meta name="description" content="Discover your next great read based on how you feel right now.">
+
     <link rel="stylesheet" href="css/styles.css">
-    
-    <!-- Modern Google Fonts for Desktop App -->
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome for UI Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="app-container">
-        
-        <!-- ========================================== -->
-        <!-- LEFT PANEL: APP CANVAS (65% Width)         -->
-        <!-- ========================================== -->
-        <main class="panel-left app-canvas">
-            
-            <!-- View 1: Splash Loading View -->
+
+        <!-- ============================== -->
+        <!-- FULL-WIDTH APP CANVAS          -->
+        <!-- ============================== -->
+        <main class="app-canvas">
+
+            <!-- View 1: Splash Screen -->
             <section id="view-splash" class="app-view active">
                 <div class="splash-content">
-                    <h1 class="brand-title">INKED</h1>
-                    <p class="brand-subtitle">Lit Vibe</p>
+                    <div class="splash-icon">📚</div>
+                    <h1 class="brand-title">Inked</h1>
+                    <p class="brand-subtitle">Your mood. Your next great read.</p>
                     <div class="loader"></div>
-                    <p class="db-status">Initializing MockMongoDB Engine...</p>
+                    <p class="splash-tagline">Curating your personal library…</p>
                 </div>
             </section>
 
-            <!-- View 2: Mood Selector View -->
+            <!-- View 2: Mood Selector -->
             <section id="view-mood-selector" class="app-view hidden">
                 <header class="view-header">
-                    <h2>How are you feeling?</h2>
-                    <p>Select a mood to discover your next great read.</p>
+                    <div>
+                        <h2>How are you feeling?</h2>
+                        <p>Pick a mood and we'll find your perfect book.</p>
+                    </div>
                 </header>
                 <div class="mood-grid">
-                    <!-- 8 Moods Grid (Populated dynamically or styled in CSS) -->
-                    <button class="mood-btn" data-mood="happy">😊 Happy</button>
-                    <button class="mood-btn" data-mood="sad">😢 Sad</button>
-                    <button class="mood-btn" data-mood="peaceful">😌 Peaceful</button>
-                    <button class="mood-btn" data-mood="thrilled">🤩 Thrilled</button>
-                    <button class="mood-btn" data-mood="thoughtful">🤔 Thoughtful</button>
-                    <button class="mood-btn" data-mood="adventurous">🤠 Adventurous</button>
-                    <button class="mood-btn" data-mood="melancholic">🌧️ Melancholic</button>
-                    <button class="mood-btn" data-mood="romantic">💖 Romantic</button>
+                    <button class="mood-btn" data-mood="happy">
+                        <span class="mood-emoji">😊</span>
+                        <span class="mood-label">Happy</span>
+                    </button>
+                    <button class="mood-btn" data-mood="sad">
+                        <span class="mood-emoji">😢</span>
+                        <span class="mood-label">Sad</span>
+                    </button>
+                    <button class="mood-btn" data-mood="peaceful">
+                        <span class="mood-emoji">😌</span>
+                        <span class="mood-label">Peaceful</span>
+                    </button>
+                    <button class="mood-btn" data-mood="thrilled">
+                        <span class="mood-emoji">🤩</span>
+                        <span class="mood-label">Thrilled</span>
+                    </button>
+                    <button class="mood-btn" data-mood="thoughtful">
+                        <span class="mood-emoji">🤔</span>
+                        <span class="mood-label">Thoughtful</span>
+                    </button>
+                    <button class="mood-btn" data-mood="adventurous">
+                        <span class="mood-emoji">🤠</span>
+                        <span class="mood-label">Adventurous</span>
+                    </button>
+                    <button class="mood-btn" data-mood="melancholic">
+                        <span class="mood-emoji">🌧️</span>
+                        <span class="mood-label">Melancholic</span>
+                    </button>
+                    <button class="mood-btn" data-mood="romantic">
+                        <span class="mood-emoji">💖</span>
+                        <span class="mood-label">Romantic</span>
+                    </button>
                 </div>
             </section>
 
-            <!-- View 3: Book Swiping Deck View -->
+            <!-- View 3: Book Swiping Deck -->
             <section id="view-discovery" class="app-view hidden">
                 <header class="view-header">
-                    <button class="nav-back-btn" id="btn-back-to-moods"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button class="nav-back-btn" id="btn-back-to-moods">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
                     <h2 id="active-mood-title">Discover Books</h2>
-                    <button class="nav-lib-btn" id="btn-open-library"><i class="fas fa-bookmark"></i> Library</button>
+                    <button class="nav-lib-btn" id="btn-open-library">
+                        <i class="fas fa-bookmark"></i> My Shelf
+                    </button>
                 </header>
-                
+
                 <div class="deck-container">
-                    <!-- Active Swipe Card Placeholder -->
                     <div class="swipe-card" id="active-card">
-                        <!-- Front of card shows quote, back reveals book -->
                         <div class="card-inner">
                             <div class="card-front">
-                                <p class="quote-text">"Loading quote..."</p>
-                                <span class="reveal-hint">Click to reveal book</span>
+                                <div class="quote-icon">❝</div>
+                                <p class="quote-text">Loading quote…</p>
+                                <span class="reveal-hint">
+                                    <i class="fas fa-hand-pointer"></i> Tap to reveal the book
+                                </span>
                             </div>
                             <div class="card-back hidden">
                                 <img src="" alt="Book Cover" class="book-cover">
@@ -84,135 +115,72 @@
                 </div>
 
                 <div class="deck-controls">
-                    <button class="action-btn dismiss-btn" id="btn-swipe-left"><i class="fas fa-times"></i></button>
-                    <button class="action-btn favorite-btn" id="btn-swipe-right"><i class="fas fa-heart"></i></button>
+                    <button class="action-btn dismiss-btn" id="btn-swipe-left" title="Pass">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button class="action-btn favorite-btn" id="btn-swipe-right" title="Save to shelf">
+                        <i class="fas fa-heart"></i>
+                    </button>
                 </div>
-                
+
                 <div class="keyboard-hints">
-                    <p>Use <kbd>←</kbd> to dismiss and <kbd>→</kbd> to favorite</p>
+                    <p>Use <kbd>←</kbd> to pass &nbsp;·&nbsp; <kbd>→</kbd> to save</p>
                 </div>
             </section>
 
-            <!-- View 4: Aesthetic Library View -->
+            <!-- View 4: My Shelf -->
             <section id="view-library" class="app-view hidden">
                 <header class="view-header">
-                    <button class="nav-back-btn" id="btn-back-from-lib"><i class="fas fa-arrow-left"></i> Back</button>
-                    <h2>Aesthetic Library</h2>
-                    <button class="nav-checkout-btn" id="btn-open-checkout"><i class="fas fa-shopping-bag"></i> Premium Art</button>
+                    <button class="nav-back-btn" id="btn-back-from-lib">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <h2>My Shelf</h2>
+                    <button class="nav-checkout-btn" id="btn-open-checkout">
+                        <i class="fas fa-shopping-bag"></i> Premium
+                    </button>
                 </header>
-                <div class="library-grid" id="library-container">
-                    <!-- Favorite Quotes/Art Cards dynamically populated here -->
-                </div>
+                <div class="library-grid" id="library-container"></div>
             </section>
 
-            <!-- View 5: Bookstore Checkout View -->
+            <!-- View 5: Premium Upgrade -->
             <section id="view-checkout" class="app-view hidden">
                 <header class="view-header">
-                    <button class="nav-back-btn" id="btn-back-from-checkout"><i class="fas fa-arrow-left"></i> Library</button>
-                    <h2>Premium Upgrade</h2>
+                    <button class="nav-back-btn" id="btn-back-from-checkout">
+                        <i class="fas fa-arrow-left"></i> My Shelf
+                    </button>
+                    <h2>Go Premium ✨</h2>
                 </header>
                 <div class="checkout-form-container">
                     <h3>Unlock Premium Art Wallpapers</h3>
-                    <p>Upgrade to a premium art tier and support local bookstores!</p>
+                    <p>Upgrade and support your favourite local bookstore!</p>
                     <form id="checkout-form">
                         <div class="form-group">
-                            <label for="bookstore-select">Select Local Bookstore:</label>
+                            <label for="bookstore-select">Select a Local Bookstore:</label>
                             <select id="bookstore-select">
-                                <option value="s1">Saeed Book Bank (Islamabad)</option>
-                                <option value="s2">Readings (Lahore)</option>
-                                <option value="s3">Liberty Books (Karachi)</option>
+                                <option value="s1">Saeed Book Bank — Islamabad</option>
+                                <option value="s2">Readings — Lahore</option>
+                                <option value="s3">Liberty Books — Karachi</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Art Tier:</label>
                             <div class="tier-options">
-                                <label><input type="radio" name="artTier" value="t1" checked> Standard ($0)</label>
+                                <label><input type="radio" name="artTier" value="t1" checked> Standard (Free)</label>
                                 <label><input type="radio" name="artTier" value="t2"> Holographic ($2)</label>
                                 <label><input type="radio" name="artTier" value="t3"> Animated ($5)</label>
                             </div>
                         </div>
-                        <button type="submit" class="submit-btn" id="btn-purchase">Complete Transaction</button>
+                        <button type="submit" class="submit-btn" id="btn-purchase">
+                            <i class="fas fa-lock-open"></i> Complete Purchase
+                        </button>
                     </form>
                 </div>
             </section>
 
         </main>
 
-        <!-- ========================================== -->
-        <!-- RIGHT PANEL: DB COMMAND CENTER (35% Width) -->
-        <!-- ========================================== -->
-        <aside class="panel-right db-inspector">
-            
-            <header class="inspector-header">
-                <h2><i class="fas fa-database"></i> DB Command Center</h2>
-                <span class="live-indicator">LIVE</span>
-            </header>
-
-            <div class="inspector-content">
-                
-                <!-- Section: Performance Dashboard & Index Toggler -->
-                <section class="db-section performance-dashboard">
-                    <h3>Performance & Indexing</h3>
-                    <div class="metrics-grid">
-                        <div class="metric-box">
-                            <span class="metric-label">Execution Time</span>
-                            <span class="metric-value" id="metric-time">0 ms</span>
-                        </div>
-                        <div class="metric-box">
-                            <span class="metric-label">Strategy</span>
-                            <span class="metric-value strategy-badge" id="metric-strategy">N/A</span>
-                        </div>
-                        <div class="metric-box">
-                            <span class="metric-label">Docs Examined</span>
-                            <span class="metric-value" id="metric-docs">0</span>
-                        </div>
-                    </div>
-                    <div class="index-control">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="toggle-mood-index">
-                            <span class="slider round"></span>
-                        </label>
-                        <span class="toggle-label">Enable Index on { mood: 1 }</span>
-                    </div>
-                </section>
-
-                <!-- Section: Live Query Terminal -->
-                <section class="db-section query-terminal">
-                    <h3>Query Console</h3>
-                    <div class="terminal-window" id="terminal-output">
-                        <div class="log-line system-msg">> MockMongoDB Engine connected. Waiting for queries...</div>
-                    </div>
-                </section>
-
-                <!-- Section: Transaction Pipeline Monitor -->
-                <section class="db-section transaction-monitor">
-                    <h3>Transaction Pipeline</h3>
-                    <ul class="transaction-steps" id="transaction-pipeline">
-                        <li class="step idle" id="tx-step-start">1. session.startTransaction()</li>
-                        <li class="step idle" id="tx-step-update">2. Update Collections (Locks)</li>
-                        <li class="step idle" id="tx-step-insert">3. Insert Transaction Log</li>
-                        <li class="step idle" id="tx-step-commit">4. session.commitTransaction()</li>
-                    </ul>
-                </section>
-
-                <!-- Section: Schema Diagram -->
-                <section class="db-section schema-diagram">
-                    <h3>Schema Architecture</h3>
-                    <div class="schema-visual">
-                        <div class="collection-node">books <span class="badge">Docs: 200+</span></div>
-                        <div class="collection-node">quotes <span class="badge">Docs: 200+</span></div>
-                        <div class="collection-node">user_preferences</div>
-                        <div class="collection-node">transactions</div>
-                    </div>
-                </section>
-
-            </div>
-
-        </aside>
-
     </div>
 
-    <!-- Application Scripts -->
     <script type="module" src="js/db.js"></script>
     <script type="module" src="js/app.js"></script>
 </body>

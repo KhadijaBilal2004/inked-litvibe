@@ -38,24 +38,27 @@ class AppTheme {
         iconTheme: IconThemeData(color: AppColors.textPrimary),
       ),
       
-      // Text Themes
+      // Text Themes - Earthy & Natural
       textTheme: TextTheme(
         // Display
         displayLarge: TextStyle(
           fontSize: 32,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
-          letterSpacing: -0.5,
+          letterSpacing: 0.3,
+          height: 1.2,
         ),
         displayMedium: TextStyle(
           fontSize: 28,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
+          letterSpacing: 0.2,
         ),
         displaySmall: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
+          letterSpacing: 0.1,
         ),
         
         // Headline
@@ -63,6 +66,7 @@ class AppTheme {
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
+          letterSpacing: 0.1,
         ),
         headlineSmall: TextStyle(
           fontSize: 18,
@@ -75,6 +79,7 @@ class AppTheme {
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
+          letterSpacing: 0.05,
         ),
         titleMedium: TextStyle(
           fontSize: 14,
@@ -85,6 +90,7 @@ class AppTheme {
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: AppColors.textSecondary,
+          letterSpacing: 0.3,
         ),
         
         // Body
@@ -92,17 +98,20 @@ class AppTheme {
           fontSize: 16,
           fontWeight: FontWeight.w400,
           color: AppColors.textPrimary,
-          height: 1.5,
+          height: 1.6,
+          letterSpacing: 0.3,
         ),
         bodyMedium: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: AppColors.textPrimary,
+          height: 1.5,
         ),
         bodySmall: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color: AppColors.textSecondary,
+          height: 1.4,
         ),
         
         // Label
@@ -110,24 +119,25 @@ class AppTheme {
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
-          letterSpacing: 0.5,
+          letterSpacing: 0.4,
         ),
       ),
       
-      // Button Themes
+      // Button Themes - Natural & Organic
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryAccent,
           foregroundColor: AppColors.primaryLight,
-          elevation: 2,
-          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+          elevation: 3,
+          shadowColor: Colors.black.withOpacity(0.15),
+          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
           ),
           textStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
+            letterSpacing: 0.3,
           ),
         ),
       ),
@@ -135,14 +145,15 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primaryAccent,
-          side: BorderSide(color: AppColors.primaryAccent, width: 2),
+          side: BorderSide(color: AppColors.primaryAccent, width: 1.5),
           padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
           ),
           textStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
+            letterSpacing: 0.2,
           ),
         ),
       ),
@@ -154,46 +165,49 @@ class AppTheme {
           textStyle: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
+            letterSpacing: 0.2,
           ),
         ),
       ),
       
-      // Input Decoration
+      // Input Decoration - Natural & Organic
       inputDecorationTheme: InputDecorationTheme(
         fillColor: AppColors.bgCard,
         filled: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.bgCardDarker),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: AppColors.bgCardDarker, width: 1.2),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.bgCardDarker),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: AppColors.bgCardDarker, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.secondaryAccent, width: 2),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: AppColors.primaryAccent, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.error),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: AppColors.error, width: 1),
         ),
-        hintStyle: TextStyle(color: AppColors.textMuted),
-        labelStyle: TextStyle(color: AppColors.textSecondary),
+        hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 14),
+        labelStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+        floatingLabelStyle: TextStyle(color: AppColors.primaryAccent),
       ),
       
-      // Card Theme
-      cardTheme: CardTheme(
+      // Card Theme - Subtle & Natural
+      cardTheme: CardThemeData(
         color: AppColors.bgCard,
-        elevation: 4,
+        elevation: 2,
+        shadowColor: Colors.black.withOpacity(0.1),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       
       // Dialog Theme
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.bgCard,
         elevation: 8,
         shape: RoundedRectangleBorder(

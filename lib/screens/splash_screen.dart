@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 
@@ -32,8 +33,8 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
     _animationController.forward();
 
-    Future.delayed(Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacementNamed('/mood-selection');
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.of(context).pushReplacementNamed('/auth');
     });
   }
 

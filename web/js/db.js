@@ -10,6 +10,7 @@
 class MockMongoDB {
     constructor() {
         this.collections = {
+            users: [],
             books: [],
             quotes: [],
             bookstores: [],
@@ -19,6 +20,7 @@ class MockMongoDB {
 
         // Track active indexes for collections
         this.indexes = {
+            users: { email: true },
             books: { mood: false, _id: true },
             quotes: { mood: false, bookId: false },
             bookstores: { location: false },
@@ -28,7 +30,9 @@ class MockMongoDB {
         this.transactionSession = null;
         this.queryLogs = []; // Stores logs of executed queries for the UI
         
-        this._initializeData();
+        if (!this._loadFromStorage()) {
+            this._initializeData();
+        }
     }
 
     /**
@@ -49,7 +53,7 @@ class MockMongoDB {
         
         // Let's add more books to make searches noticeable
         for (let i = 9; i <= 200; i++) {
-            const moods = ['happy', 'sad', 'peaceful', 'thrilled', 'thoughtful', 'adventurous', 'melancholic', 'romantic'];
+            const moods = ['happy', 'sad', 'peaceful', 'thrilled', 'thoughtful', 'adventurous', 'melancholic', 'romantic', 'mysterious', 'inspiring', 'nostalgic', 'anxious'];
             const randomMood = moods[Math.floor(Math.random() * moods.length)];
             this.collections.books.push({
                 _id: `b${i}`, title: `Mock Book ${i}`, author: `Author ${i}`, mood: randomMood, rating: 4.0, pages: 300, coverImageUrl: 'https://via.placeholder.com/300x450/1A0A2E/AB63FA'
@@ -66,7 +70,7 @@ class MockMongoDB {
 
         // Add dummy quotes
         for(let i=5; i<=200; i++) {
-            const moods = ['happy', 'sad', 'peaceful', 'thrilled', 'thoughtful', 'adventurous', 'melancholic', 'romantic'];
+            const moods = ['happy', 'sad', 'peaceful', 'thrilled', 'thoughtful', 'adventurous', 'melancholic', 'romantic', 'mysterious', 'inspiring', 'nostalgic', 'anxious'];
             const randomMood = moods[Math.floor(Math.random() * moods.length)];
             this.collections.quotes.push({
                 _id: `q${i}`, text: `This is a profound quote ${i} that touches the soul.`, bookId: `b${Math.floor(Math.random()*200)+1}`, mood: randomMood
@@ -80,10 +84,35 @@ class MockMongoDB {
             { _id: 's3', name: 'Liberty Books', location: 'Karachi', hasPremiumArt: false }
         ];
 
-        // Mock User Preferences
-        this.collections.user_preferences = [
-            { userId: 'u1', favoriteBooks: [], dismissedBooks: [], moodFrequency: {}, lastUpdated: new Date() }
+        // Mock User Preferences (for the default mock user if needed, though real users will be created via Auth)
+        this.collections.users = [
+            { _id: 'u1', username: 'Guest Reader', email: 'guest@litvibe.com', password: 'password123' }
         ];
+        this.collections.user_preferences = [
+            { userId: 'u1', favoriteBooks: [], readBooks: [], toReadBooks: [], dismissedBooks: [], moodFrequency: {}, lastUpdated: new Date() }
+        ];
+        
+        this._saveToStorage();
+    }
+
+    /**
+     * Data Persistence Simulation
+     */
+    _saveToStorage() {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('inked_db_snapshot', JSON.stringify(this.collections));
+        }
+    }
+
+    _loadFromStorage() {
+        if (typeof window !== 'undefined') {
+            const data = localStorage.getItem('inked_db_snapshot');
+            if (data) {
+                this.collections = JSON.parse(data);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -213,6 +242,7 @@ class MockMongoDB {
             }
             return doc;
         });
+        if (count > 0) this._saveToStorage();
         return { modifiedCount: count };
     }
 
@@ -220,6 +250,7 @@ class MockMongoDB {
         this._logToConsole(`db.${collectionName}.insert(${JSON.stringify(document)})`);
         const newDoc = { ...document, _id: `id_${Date.now()}_${Math.floor(Math.random()*1000)}` };
         this.collections[collectionName].push(newDoc);
+        this._saveToStorage();
         return { insertedId: newDoc._id };
     }
 
@@ -347,6 +378,38 @@ class MockMongoDB {
             this.abortTransaction();
             return false;
         }
+    }
+
+    /**
+     * Auth Flow Simulation
+     */
+    registerUser(username, email, password) {
+        const existing = this.findOne('users', { email }).result;
+        if (existing) throw new Error("Email already registered");
+
+        const userRes = this.insert('users', { username, email, password });
+        const userId = userRes.insertedId;
+
+        // Create default preferences
+        this.insert('user_preferences', {
+            userId: userId,
+            favoriteBooks: [],
+            readBooks: [],
+            toReadBooks: [],
+            dismissedBooks: [],
+            moodFrequency: {},
+            lastUpdated: new Date()
+        });
+
+        return { userId, username, email };
+    }
+
+    loginUser(email, password) {
+        const user = this.findOne('users', { email }).result;
+        if (!user || user.password !== password) {
+            throw new Error("Invalid email or password");
+        }
+        return { userId: user._id, username: user.username, email: user.email };
     }
 }
 

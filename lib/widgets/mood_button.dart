@@ -9,12 +9,12 @@ class MoodButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const MoodButton({
-    super.key,
+    Key? key,
     required this.mood,
     required this.label,
     required this.isSelected,
     required this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +33,8 @@ class MoodButton extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      moodColor.withValues(alpha: 0.8),
-                      moodColor.withValues(alpha: 0.5),
+                      moodColor.withOpacity(0.8),
+                      moodColor.withOpacity(0.5),
                     ],
                   )
                 : null,
@@ -46,7 +46,7 @@ class MoodButton extends StatelessWidget {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: moodColor.withValues(alpha: 0.5),
+                      color: moodColor.withOpacity(0.35),
                       blurRadius: 12,
                       spreadRadius: 2,
                     )
@@ -58,15 +58,17 @@ class MoodButton extends StatelessWidget {
             children: [
               Text(
                 getMoodEmoji(mood),
-                style: const TextStyle(fontSize: 32),
+                style: TextStyle(fontSize: 32),
               ),
-              const SizedBox(height: AppConstants.paddingSmall),
+              SizedBox(height: AppConstants.paddingSmall),
               Text(
                 label,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: isSelected ? Colors.white : AppColors.textSecondary,
-                ),
+                      color: isSelected
+                          ? AppColors.primaryLight
+                          : AppColors.textSecondary,
+                    ),
               ),
             ],
           ),

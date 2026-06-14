@@ -1,187 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inked — Mood-Based Book Discovery</title>
-    <meta name="description" content="Discover your next great read based on how you feel right now.">
-
-    <link rel="stylesheet" href="css/styles.css">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="A mood-based book discovery Flutter app.">
+  <title>Inked</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="flutter.js" defer></script>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #EEE5D8;
+      color: #352A24;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+  </style>
 </head>
 <body>
-    <div class="app-container">
-
-        <!-- ============================== -->
-        <!-- FULL-WIDTH APP CANVAS          -->
-        <!-- ============================== -->
-        <main class="app-canvas">
-
-            <!-- View 1: Splash Screen -->
-            <section id="view-splash" class="app-view active">
-                <div class="splash-content">
-                    <div class="splash-icon">📚</div>
-                    <h1 class="brand-title">Inked</h1>
-                    <p class="brand-subtitle">Your mood. Your next great read.</p>
-                    <div class="loader"></div>
-                    <p class="splash-tagline">Curating your personal library…</p>
-                </div>
-            </section>
-
-            <!-- View 2: Mood Selector -->
-            <section id="view-mood-selector" class="app-view hidden">
-                <header class="view-header">
-                    <div>
-                        <h2>How are you feeling?</h2>
-                        <p>Pick a mood and we'll find your perfect book.</p>
-                    </div>
-                </header>
-                <div class="mood-grid">
-                    <button class="mood-btn" data-mood="happy">
-                        <span class="mood-emoji">😊</span>
-                        <span class="mood-label">Happy</span>
-                    </button>
-                    <button class="mood-btn" data-mood="sad">
-                        <span class="mood-emoji">😢</span>
-                        <span class="mood-label">Sad</span>
-                    </button>
-                    <button class="mood-btn" data-mood="peaceful">
-                        <span class="mood-emoji">😌</span>
-                        <span class="mood-label">Peaceful</span>
-                    </button>
-                    <button class="mood-btn" data-mood="thrilled">
-                        <span class="mood-emoji">🤩</span>
-                        <span class="mood-label">Thrilled</span>
-                    </button>
-                    <button class="mood-btn" data-mood="thoughtful">
-                        <span class="mood-emoji">🤔</span>
-                        <span class="mood-label">Thoughtful</span>
-                    </button>
-                    <button class="mood-btn" data-mood="adventurous">
-                        <span class="mood-emoji">🤠</span>
-                        <span class="mood-label">Adventurous</span>
-                    </button>
-                    <button class="mood-btn" data-mood="melancholic">
-                        <span class="mood-emoji">🌧️</span>
-                        <span class="mood-label">Melancholic</span>
-                    </button>
-                    <button class="mood-btn" data-mood="romantic">
-                        <span class="mood-emoji">💖</span>
-                        <span class="mood-label">Romantic</span>
-                    </button>
-                </div>
-            </section>
-
-            <!-- View 3: Book Swiping Deck -->
-            <section id="view-discovery" class="app-view hidden">
-                <header class="view-header">
-                    <button class="nav-back-btn" id="btn-back-to-moods">
-                        <i class="fas fa-arrow-left"></i> Back
-                    </button>
-                    <h2 id="active-mood-title">Discover Books</h2>
-                    <button class="nav-lib-btn" id="btn-open-library">
-                        <i class="fas fa-bookmark"></i> My Shelf
-                    </button>
-                </header>
-
-                <div class="deck-container">
-                    <div class="swipe-card" id="active-card">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <div class="quote-icon">❝</div>
-                                <p class="quote-text">Loading quote…</p>
-                                <span class="reveal-hint">
-                                    <i class="fas fa-hand-pointer"></i> Tap to reveal the book
-                                </span>
-                            </div>
-                            <div class="card-back hidden">
-                                <img src="" alt="Book Cover" class="book-cover">
-                                <h3 class="book-title">Book Title</h3>
-                                <p class="book-author">Author</p>
-                                <div class="book-meta">
-                                    <span class="book-rating"><i class="fas fa-star"></i> 4.5</span>
-                                    <span class="book-pages">300 pages</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="deck-controls">
-                    <button class="action-btn dismiss-btn" id="btn-swipe-left" title="Pass">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <button class="action-btn favorite-btn" id="btn-swipe-right" title="Save to shelf">
-                        <i class="fas fa-heart"></i>
-                    </button>
-                </div>
-
-                <div class="keyboard-hints">
-                    <p>Use <kbd>←</kbd> to pass &nbsp;·&nbsp; <kbd>→</kbd> to save</p>
-                </div>
-            </section>
-
-            <!-- View 4: My Shelf -->
-            <section id="view-library" class="app-view hidden">
-                <header class="view-header">
-                    <button class="nav-back-btn" id="btn-back-from-lib">
-                        <i class="fas fa-arrow-left"></i> Back
-                    </button>
-                    <h2>My Shelf</h2>
-                    <button class="nav-checkout-btn" id="btn-open-checkout">
-                        <i class="fas fa-shopping-bag"></i> Premium
-                    </button>
-                </header>
-                <div class="library-grid" id="library-container"></div>
-            </section>
-
-            <!-- View 5: Premium Upgrade -->
-            <section id="view-checkout" class="app-view hidden">
-                <header class="view-header">
-                    <button class="nav-back-btn" id="btn-back-from-checkout">
-                        <i class="fas fa-arrow-left"></i> My Shelf
-                    </button>
-                    <h2>Go Premium ✨</h2>
-                </header>
-                <div class="checkout-form-container">
-                    <h3>Unlock Premium Art Wallpapers</h3>
-                    <p>Upgrade and support your favourite local bookstore!</p>
-                    <form id="checkout-form">
-                        <div class="form-group">
-                            <label for="bookstore-select">Select a Local Bookstore:</label>
-                            <select id="bookstore-select">
-                                <option value="s1">Saeed Book Bank — Islamabad</option>
-                                <option value="s2">Readings — Lahore</option>
-                                <option value="s3">Liberty Books — Karachi</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Art Tier:</label>
-                            <div class="tier-options">
-                                <label><input type="radio" name="artTier" value="t1" checked> Standard (Free)</label>
-                                <label><input type="radio" name="artTier" value="t2"> Holographic ($2)</label>
-                                <label><input type="radio" name="artTier" value="t3"> Animated ($5)</label>
-                            </div>
-                        </div>
-                        <button type="submit" class="submit-btn" id="btn-purchase">
-                            <i class="fas fa-lock-open"></i> Complete Purchase
-                        </button>
-                    </form>
-                </div>
-            </section>
-
-        </main>
-
-    </div>
-
-    <script type="module" src="js/db.js"></script>
-    <script type="module" src="js/app.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: null,
+        },
+        onEntrypointLoaded: function (engineInitializer) {
+          return engineInitializer.initializeEngine().then(function (appRunner) {
+            return appRunner.runApp();
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>

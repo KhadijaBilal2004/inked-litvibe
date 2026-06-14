@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import '../services/local_storage_service.dart';
+import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 import '../widgets/mood_button.dart';
 
 class MoodSelectionScreen extends StatefulWidget {
-  const MoodSelectionScreen({super.key});
+  final ILocalStorageService? storage;
+
+  const MoodSelectionScreen({Key? key, this.storage}) : super(key: key);
 
   @override
   State<MoodSelectionScreen> createState() => _MoodSelectionScreenState();
@@ -15,10 +18,14 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = LocalStorageService.instance.currentUser;
+    final storage =
+        widget.storage ?? LocalStorageService.instance as ILocalStorageService;
+    final user = (storage as dynamic).currentUser;
     return Scaffold(
+      backgroundColor: AppColors.bgLight,
       appBar: AppBar(
-        title: const Text('Mood Dashboard'),
+        backgroundColor: AppColors.bgLight,
+        title: Text('Mood Dashboard'),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
@@ -35,7 +42,7 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(AppConstants.paddingLarge),
+          padding: EdgeInsets.all(AppConstants.paddingLarge),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -48,10 +55,10 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
                 'Choose a mood and let Inked find your next meaningful read.',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const SizedBox(height: AppConstants.paddingXLarge),
+              SizedBox(height: AppConstants.paddingXLarge),
               Expanded(
                 child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: AppConstants.paddingMedium,
                     mainAxisSpacing: AppConstants.paddingMedium,
@@ -60,7 +67,8 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
                   itemCount: AppConstants.moods.length,
                   itemBuilder: (context, index) {
                     final mood = AppConstants.moods[index];
-                    final description = AppConstants.moodDescriptions[mood] ?? '';
+                    final description =
+                        AppConstants.moodDescriptions[mood] ?? '';
 
                     return MoodButton(
                       mood: mood,
@@ -71,10 +79,14 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
                           selectedMood = mood;
                         });
                         Future.delayed(AppConstants.shortDuration, () {
-                          Navigator.of(context).pushNamed(
-                            '/discovery',
-                            arguments: mood,
-                          );
+                          if (!mounted) return;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (!mounted) return;
+                            Navigator.of(context).pushNamed(
+                              '/discovery',
+                              arguments: mood,
+                            );
+                          });
                         });
                       },
                     );

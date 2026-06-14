@@ -9,11 +9,13 @@ import '../widgets/swipe_card.dart';
 
 class BookDiscoveryScreen extends StatefulWidget {
   final String mood;
+  final ILocalStorageService? storage;
 
   const BookDiscoveryScreen({
-    super.key,
+    Key? key,
     required this.mood,
-  });
+    this.storage,
+  }) : super(key: key);
 
   @override
   State<BookDiscoveryScreen> createState() => _BookDiscoveryScreenState();
@@ -60,14 +62,19 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
   }
 
   void _handleSwipe(Book book, CardSwiperDirection direction) {
-    final user = LocalStorageService.instance.currentUser;
+    final storage = widget.storage ?? LocalStorageService.instance as ILocalStorageService;
+    final user = (storage as dynamic).currentUser as dynamic; // access currentUser if available
     if (direction == CardSwiperDirection.right && user != null) {
-      LocalStorageService.instance.addToRead(user.id, book.id).catchError((error) {
-        debugPrint('Could not save to-read book: $error');
-      });
-      LocalStorageService.instance.addToFavorites(user.id, book.id).catchError((error) {
-        debugPrint('Could not save favorite book: $error');
-      });
+      try {
+        (storage as dynamic).addToRead(user.id, book.id);
+      } catch (e) {
+        debugPrint('Could not save to-read book: $e');
+      }
+      try {
+        (storage as dynamic).addToFavorites(user.id, book.id);
+      } catch (e) {
+        debugPrint('Could not save favorite book: $e');
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Added "${book.title}" to your To Read list.')),
       );
@@ -107,10 +114,11 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgLight,
       appBar: AppBar(
         title: Text('Discover $widget.mood reads'),
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.bgLight,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -118,7 +126,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
       ),
       body: SafeArea(
         child: isLoading
-            ? const Center(
+            ? Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
                     AppColors.secondaryAccent,
@@ -130,21 +138,24 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.library_books,
                           size: 64,
                           color: AppColors.textMuted,
                         ),
-                        const SizedBox(height: AppConstants.paddingLarge),
+                        SizedBox(height: AppConstants.paddingLarge),
                         Text(
                           'No books found for this mood',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(color: AppColors.textSecondary),
                         ),
                       ],
                     ),
                   )
                 : Padding(
-                    padding: const EdgeInsets.all(AppConstants.paddingMedium),
+                    padding: EdgeInsets.all(AppConstants.paddingMedium),
                     child: Column(
                       children: [
                         Expanded(
@@ -162,29 +173,27 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                             },
                           ),
                         ),
-                        const SizedBox(height: AppConstants.paddingLarge),
+                        SizedBox(height: AppConstants.paddingLarge),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             FloatingActionButton(
-                              heroTag: 'pass_btn',
                               onPressed: () {
                                 _cardSwiperController.swipe(CardSwiperDirection.left);
                               },
-                              backgroundColor: AppColors.error,
+                              backgroundColor: AppColors.accentRed,
                               child: const Icon(Icons.close),
                             ),
                             FloatingActionButton(
-                              heroTag: 'like_btn',
                               onPressed: () {
                                 _cardSwiperController.swipe(CardSwiperDirection.right);
                               },
-                              backgroundColor: AppColors.accentPink,
+                              backgroundColor: AppColors.accentGold,
                               child: const Icon(Icons.favorite),
                             ),
                           ],
                         ),
-                        const SizedBox(height: AppConstants.paddingMedium),
+                        SizedBox(height: AppConstants.paddingMedium),
                         Text(
                           '${currentIndex + 1} / ${books.length}',
                           style: Theme.of(context).textTheme.bodySmall,

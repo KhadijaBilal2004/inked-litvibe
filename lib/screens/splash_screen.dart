@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -33,7 +35,11 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _animationController.forward();
 
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacementNamed('/auth');
+      if (!mounted) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        Navigator.of(context).pushReplacementNamed('/auth');
+      });
     });
   }
 
@@ -48,9 +54,8 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     return Scaffold(
       backgroundColor: AppColors.bgDark,
       body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FadeTransition(
               opacity: _fadeAnimation,
@@ -61,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: const LinearGradient(
+                    gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
@@ -71,23 +76,23 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.secondaryAccent.withValues(alpha: 0.5),
+                        color: AppColors.secondaryAccent.withOpacity(0.5),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
                     ],
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Icon(
                       Icons.auto_stories,
                       size: 60,
-                      color: AppColors.textPrimary,
+                      color: AppColors.primaryLight,
                     ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: AppConstants.paddingXLarge),
+            SizedBox(height: AppConstants.paddingXLarge),
             FadeTransition(
               opacity: _fadeAnimation,
               child: Column(
@@ -95,22 +100,22 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   Text(
                     AppConstants.appName,
                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      letterSpacing: 2,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: AppColors.primaryLight,
+                          letterSpacing: 2,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                  const SizedBox(height: AppConstants.paddingSmall),
+                  SizedBox(height: AppConstants.paddingSmall),
                   Text(
                     'Mood-Based Book Discovery',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                          color: AppColors.primaryLight,
+                        ),
                   ),
                 ],
               ),
             ),
           ],
-        ),
         ),
       ),
     );

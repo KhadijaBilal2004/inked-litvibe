@@ -10,22 +10,20 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.bgLight,
       
       // Color Scheme
-      colorScheme: ColorScheme.light(
+      colorScheme: const ColorScheme.light(
         primary: AppColors.primaryAccent,
         secondary: AppColors.secondaryAccent,
         tertiary: AppColors.accentGold,
-        background: AppColors.bgLight,
         surface: AppColors.bgCard,
         error: AppColors.error,
         onPrimary: AppColors.primaryLight,
         onSecondary: AppColors.primaryLight,
-        onBackground: AppColors.textPrimary,
         onSurface: AppColors.textPrimary,
         onError: AppColors.primaryLight,
       ),
       
       // App Bar Theme
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
@@ -39,7 +37,7 @@ class AppTheme {
       ),
       
       // Text Themes - Earthy & Natural
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
         // Display
         displayLarge: TextStyle(
           fontSize: 32,
@@ -129,12 +127,12 @@ class AppTheme {
           backgroundColor: AppColors.primaryAccent,
           foregroundColor: AppColors.primaryLight,
           elevation: 3,
-          shadowColor: Colors.black.withOpacity(0.15),
-          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          shadowColor: Colors.black.withValues(alpha: 0.15),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          textStyle: TextStyle(
+          textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.3,
@@ -145,12 +143,12 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primaryAccent,
-          side: BorderSide(color: AppColors.primaryAccent, width: 1.5),
-          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+          side: const BorderSide(color: AppColors.primaryAccent, width: 1.5),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          textStyle: TextStyle(
+          textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.2,
@@ -161,8 +159,8 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primaryAccent,
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          textStyle: TextStyle(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          textStyle: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.2,
@@ -174,33 +172,33 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         fillColor: AppColors.bgCard,
         filled: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.bgCardDarker, width: 1.2),
+          borderSide: const BorderSide(color: AppColors.bgCardDarker, width: 1.2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.bgCardDarker, width: 1),
+          borderSide: const BorderSide(color: AppColors.bgCardDarker, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.primaryAccent, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.primaryAccent, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.error, width: 1),
+          borderSide: const BorderSide(color: AppColors.error, width: 1),
         ),
-        hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 14),
-        labelStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-        floatingLabelStyle: TextStyle(color: AppColors.primaryAccent),
+        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+        labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+        floatingLabelStyle: const TextStyle(color: AppColors.primaryAccent),
       ),
       
       // Card Theme - Subtle & Natural
       cardTheme: CardThemeData(
         color: AppColors.bgCard,
         elevation: 2,
-        shadowColor: Colors.black.withOpacity(0.1),
+        shadowColor: Colors.black.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),

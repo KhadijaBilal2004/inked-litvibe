@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import '../services/local_storage_service.dart';
-import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 import '../widgets/mood_button.dart';
 
 class MoodSelectionScreen extends StatefulWidget {
-  const MoodSelectionScreen({Key? key}) : super(key: key);
+  const MoodSelectionScreen({super.key});
 
   @override
   State<MoodSelectionScreen> createState() => _MoodSelectionScreenState();
@@ -19,7 +18,7 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
     final user = LocalStorageService.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mood Dashboard'),
+        title: const Text('Mood Dashboard'),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
@@ -36,7 +35,7 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(AppConstants.paddingLarge),
+          padding: const EdgeInsets.all(AppConstants.paddingLarge),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -49,10 +48,10 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
                 'Choose a mood and let Inked find your next meaningful read.',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              SizedBox(height: AppConstants.paddingXLarge),
+              const SizedBox(height: AppConstants.paddingXLarge),
               Expanded(
                 child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: AppConstants.paddingMedium,
                     mainAxisSpacing: AppConstants.paddingMedium,

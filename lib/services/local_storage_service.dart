@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/user.dart';
 import '../models/user_preference.dart';
@@ -81,7 +80,7 @@ class LocalStorageService {
       throw Exception('Invalid email or password.');
     }
 
-    final user = User.fromJson(Map<String, dynamic>.from(rawUser as Map));
+    final user = User.fromJson(Map<String, dynamic>.from(rawUser));
     _currentUser = user;
     await _sessionBox.put('currentUserId', user.id);
     return user;

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
-import '../utils/constants.dart';
 
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({Key? key}) : super(key: key);
+  const AuthScreen({super.key});
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -28,7 +27,7 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _isLoggingIn = true;
   bool _isSubmitting = false;
   String? _errorMessage;
-  bool _isChecking = LocalStorageService.instance.currentUser != null;
+  final bool _isChecking = LocalStorageService.instance.currentUser != null;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -74,7 +73,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isChecking) {
-      return Scaffold(
+      return const Scaffold(
         backgroundColor: AppColors.bgLight,
         body: Center(
           child: CircularProgressIndicator(
@@ -198,7 +197,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         : 'Already have an account? Sign in'),
                   ),
                   const SizedBox(height: 24),
-                  Divider(color: AppColors.bgCardDarker),
+                  const Divider(color: AppColors.bgCardDarker),
                   const SizedBox(height: 16),
                   Text(
                     'Inked keeps your preferences locally and helps you build a personal book shelf.',

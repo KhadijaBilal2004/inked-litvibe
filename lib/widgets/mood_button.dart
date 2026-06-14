@@ -9,12 +9,12 @@ class MoodButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const MoodButton({
-    Key? key,
+    super.key,
     required this.mood,
     required this.label,
     required this.isSelected,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +33,8 @@ class MoodButton extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      moodColor.withOpacity(0.8),
-                      moodColor.withOpacity(0.5),
+                      moodColor.withValues(alpha: 0.8),
+                      moodColor.withValues(alpha: 0.5),
                     ],
                   )
                 : null,
@@ -46,7 +46,7 @@ class MoodButton extends StatelessWidget {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: moodColor.withOpacity(0.5),
+                      color: moodColor.withValues(alpha: 0.5),
                       blurRadius: 12,
                       spreadRadius: 2,
                     )
@@ -58,9 +58,9 @@ class MoodButton extends StatelessWidget {
             children: [
               Text(
                 getMoodEmoji(mood),
-                style: TextStyle(fontSize: 32),
+                style: const TextStyle(fontSize: 32),
               ),
-              SizedBox(height: AppConstants.paddingSmall),
+              const SizedBox(height: AppConstants.paddingSmall),
               Text(
                 label,
                 textAlign: TextAlign.center,

@@ -6,7 +6,7 @@ import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -93,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             height: 100,
                             width: 120,
                             color: AppColors.bgCardDarker,
-                            child: Icon(Icons.book, color: AppColors.textMuted, size: 32),
+                            child: const Icon(Icons.book, color: AppColors.textMuted, size: 32),
                           ),
                         ),
                       ),
@@ -147,7 +147,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(AppConstants.paddingLarge),
+          padding: const EdgeInsets.all(AppConstants.paddingLarge),
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : Column(

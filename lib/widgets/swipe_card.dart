@@ -10,12 +10,12 @@ class SwipeCard extends StatelessWidget {
   final VoidCallback onRevealBook;
 
   const SwipeCard({
-    Key? key,
+    super.key,
     required this.book,
     required this.showQuote,
     this.currentQuote,
     required this.onRevealBook,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class SwipeCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppConstants.radiusXLarge),
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
@@ -49,17 +49,17 @@ class SwipeCard extends StatelessWidget {
 
   Widget _buildQuoteView(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(AppConstants.paddingLarge),
+      padding: const EdgeInsets.all(AppConstants.paddingLarge),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.format_quote,
             size: 48,
             color: AppColors.secondaryAccent,
           ),
-          SizedBox(height: AppConstants.paddingLarge),
+          const SizedBox(height: AppConstants.paddingLarge),
           Text(
             currentQuote ?? 'Loading quote...',
             textAlign: TextAlign.center,
@@ -69,9 +69,9 @@ class SwipeCard extends StatelessWidget {
               height: 1.6,
             ),
           ),
-          SizedBox(height: AppConstants.paddingXLarge),
+          const SizedBox(height: AppConstants.paddingXLarge),
           Container(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: AppConstants.paddingMedium,
               vertical: AppConstants.paddingSmall,
             ),
@@ -114,14 +114,14 @@ class SwipeCard extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [
                 Colors.transparent,
-                AppColors.bgCard.withOpacity(0.9),
+                AppColors.bgCard.withValues(alpha: 0.9),
               ],
             ),
           ),
         ),
         // Content
         Padding(
-          padding: EdgeInsets.all(AppConstants.paddingLarge),
+          padding: const EdgeInsets.all(AppConstants.paddingLarge),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,31 +132,31 @@ class SwipeCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(height: AppConstants.paddingSmall),
+              const SizedBox(height: AppConstants.paddingSmall),
               Text(
                 'by ${book.author}',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),
-              SizedBox(height: AppConstants.paddingMedium),
+              const SizedBox(height: AppConstants.paddingMedium),
               Row(
                 children: [
-                  Icon(Icons.star, color: AppColors.accentGold, size: 20),
-                  SizedBox(width: AppConstants.paddingSmall),
+                  const Icon(Icons.star, color: AppColors.accentGold, size: 20),
+                  const SizedBox(width: AppConstants.paddingSmall),
                   Text(
                     book.rating.toStringAsFixed(1),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Container(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: AppConstants.paddingMedium,
                       vertical: AppConstants.paddingSmall,
                     ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-                      color: AppColors.secondaryAccent.withOpacity(0.2),
+                      color: AppColors.secondaryAccent.withValues(alpha: 0.2),
                     ),
                     child: Text(
                       book.mood.toUpperCase(),

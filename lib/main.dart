@@ -15,7 +15,7 @@ Future<void> main() async {
 }
 
 class InkedApp extends StatelessWidget {
-  const InkedApp({Key? key}) : super(key: key);
+  const InkedApp({super.key});
 
   @override
   Widget build(BuildContext context) {

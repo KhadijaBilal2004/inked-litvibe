@@ -21,6 +21,7 @@ class LocalStorageService implements ILocalStorageService {
   late Box<dynamic> _preferencesBox;
   User? _currentUser;
 
+  @override
   User? get currentUser => _currentUser;
 
   static Future<void> init({String? hivePath}) async {
@@ -53,6 +54,7 @@ class LocalStorageService implements ILocalStorageService {
     return User.fromJson(Map<String, dynamic>.from(raw as Map));
   }
 
+  @override
   Future<User> registerUser(String name, String email, String password) async {
     debugPrint('LocalStorageService.registerUser: name=$name email=$email');
     final existingUser = _usersBox.values.cast<Map>().firstWhere(
@@ -97,6 +99,7 @@ class LocalStorageService implements ILocalStorageService {
     return user;
   }
 
+  @override
   Future<User> loginUser(String email, String password) async {
     debugPrint('LocalStorageService.loginUser: email=$email');
     final rawUser = _usersBox.values.cast<Map>().firstWhere(
@@ -111,7 +114,7 @@ class LocalStorageService implements ILocalStorageService {
       throw Exception('Invalid email or password.');
     }
 
-    final user = User.fromJson(Map<String, dynamic>.from(rawUser as Map));
+    final user = User.fromJson(Map<String, dynamic>.from(rawUser));
     _currentUser = user;
     await _sessionBox.put('currentUserId', user.id);
     try {
@@ -121,12 +124,14 @@ class LocalStorageService implements ILocalStorageService {
     return user;
   }
 
+  @override
   Future<void> logout() async {
     _currentUser = null;
     await _sessionBox.delete('currentUserId');
   }
 
   /// Close opened Hive boxes and clear in-memory state.
+  @override
   Future<void> close() async {
     _currentUser = null;
     try {

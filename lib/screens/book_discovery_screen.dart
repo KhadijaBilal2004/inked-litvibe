@@ -12,10 +12,10 @@ class BookDiscoveryScreen extends StatefulWidget {
   final ILocalStorageService? storage;
 
   const BookDiscoveryScreen({
-    Key? key,
+    super.key,
     required this.mood,
     this.storage,
-  }) : super(key: key);
+  });
 
   @override
   State<BookDiscoveryScreen> createState() => _BookDiscoveryScreenState();
@@ -126,7 +126,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
       ),
       body: SafeArea(
         child: isLoading
-            ? Center(
+            ? const Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
                     AppColors.secondaryAccent,
@@ -138,12 +138,12 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.library_books,
                           size: 64,
                           color: AppColors.textMuted,
                         ),
-                        SizedBox(height: AppConstants.paddingLarge),
+                        const SizedBox(height: AppConstants.paddingLarge),
                         Text(
                           'No books found for this mood',
                           style: Theme.of(context)
@@ -155,7 +155,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                     ),
                   )
                 : Padding(
-                    padding: EdgeInsets.all(AppConstants.paddingMedium),
+                    padding: const EdgeInsets.all(AppConstants.paddingMedium),
                     child: Column(
                       children: [
                         Expanded(
@@ -173,7 +173,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                             },
                           ),
                         ),
-                        SizedBox(height: AppConstants.paddingLarge),
+                        const SizedBox(height: AppConstants.paddingLarge),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -193,7 +193,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: AppConstants.paddingMedium),
+                        const SizedBox(height: AppConstants.paddingMedium),
                         Text(
                           '${currentIndex + 1} / ${books.length}',
                           style: Theme.of(context).textTheme.bodySmall,

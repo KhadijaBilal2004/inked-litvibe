@@ -23,11 +23,9 @@ linter:
   rules:
     - avoid_empty_else
     - avoid_print
-    - avoid_relative_import_imports
     - avoid_returning_null_for_future
     - avoid_returning_this
     - avoid_returning_null
-    - avoid_returning_null_for_async
     - avoid_slow_async_io
     - cancel_subscriptions
     - close_sinks
@@ -35,7 +33,6 @@ linter:
     - control_flow_in_finally
     - empty_statements
     - hash_and_equals
-    - invariant_booleans
     - iterable_contains_unrelated_type
     - leading_newlines_in_multiline_strings
     - list_remove_unrelated_type

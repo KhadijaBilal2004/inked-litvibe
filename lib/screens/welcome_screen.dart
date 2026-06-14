@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
-import 'auth_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +51,7 @@ class WelcomeScreen extends StatelessWidget {
                         .pushReplacementNamed('/auth', arguments: false);
                   },
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColors.primaryAccent),
+                    side: const BorderSide(color: AppColors.primaryAccent),
                     foregroundColor: AppColors.textPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),

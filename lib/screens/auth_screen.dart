@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
-import '../utils/constants.dart';
-import 'mood_selection_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   final bool isLoggingIn;
   final ILocalStorageService? storage;
 
-  const AuthScreen({Key? key, this.isLoggingIn = true, this.storage})
-      : super(key: key);
+  const AuthScreen({super.key, this.isLoggingIn = true, this.storage});
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -110,7 +107,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isChecking) {
-      return Scaffold(
+      return const Scaffold(
         backgroundColor: AppColors.bgLight,
         body: Center(
           child: CircularProgressIndicator(
@@ -237,7 +234,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         : 'Already have an account? Sign in'),
                   ),
                   const SizedBox(height: 24),
-                  Divider(color: AppColors.bgCardDarker),
+                  const Divider(color: AppColors.bgCardDarker),
                   const SizedBox(height: 16),
                   Text(
                     'Inked keeps your preferences locally and helps you build a personal book shelf.',

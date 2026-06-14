@@ -1,10 +1,8 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:inked/screens/auth_screen.dart';
 import 'package:inked/models/user.dart';
-import 'package:inked/screens/mood_selection_screen.dart';
 import 'package:inked/screens/welcome_screen.dart';
 import 'package:inked/services/local_storage_service.dart';
 

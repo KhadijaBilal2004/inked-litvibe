@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class MoodButton extends StatelessWidget {
   final String mood;
@@ -9,12 +10,12 @@ class MoodButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const MoodButton({
-    Key? key,
+    super.key,
     required this.mood,
     required this.label,
     required this.isSelected,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +34,8 @@ class MoodButton extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      moodColor.withOpacity(0.8),
-                      moodColor.withOpacity(0.5),
+                      moodColor.withValues(alpha: 0.8),
+                      moodColor.withValues(alpha: 0.5),
                     ],
                   )
                 : null,
@@ -46,7 +47,7 @@ class MoodButton extends StatelessWidget {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: moodColor.withOpacity(0.35),
+                      color: moodColor.withValues(alpha: 0.35),
                       blurRadius: 12,
                       spreadRadius: 2,
                     )
@@ -58,9 +59,9 @@ class MoodButton extends StatelessWidget {
             children: [
               Text(
                 getMoodEmoji(mood),
-                style: TextStyle(fontSize: 32),
+                style: const TextStyle(fontSize: 32),
               ),
-              SizedBox(height: AppConstants.paddingSmall),
+              const SizedBox(height: AppConstants.paddingSmall),
               Text(
                 label,
                 textAlign: TextAlign.center,
@@ -74,7 +75,11 @@ class MoodButton extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ).animate().fade(duration: 300.ms).scale(
+          begin: const Offset(0.8, 0.8),
+          curve: Curves.easeOutBack,
+          duration: 400.ms,
+        );
   }
 
   String getMoodEmoji(String mood) {

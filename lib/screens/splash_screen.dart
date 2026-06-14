@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -66,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen>
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
@@ -76,13 +75,13 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.secondaryAccent.withOpacity(0.5),
+                        color: AppColors.secondaryAccent.withValues(alpha: 0.5),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
                     ],
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Icon(
                       Icons.auto_stories,
                       size: 60,
@@ -92,7 +91,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
             ),
-            SizedBox(height: AppConstants.paddingXLarge),
+            const SizedBox(height: AppConstants.paddingXLarge),
             FadeTransition(
               opacity: _fadeAnimation,
               child: Column(
@@ -105,7 +104,7 @@ class _SplashScreenState extends State<SplashScreen>
                           fontWeight: FontWeight.bold,
                         ),
                   ),
-                  SizedBox(height: AppConstants.paddingSmall),
+                  const SizedBox(height: AppConstants.paddingSmall),
                   Text(
                     'Mood-Based Book Discovery',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(

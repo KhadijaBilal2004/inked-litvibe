@@ -4,11 +4,13 @@ import '../services/book_service.dart';
 import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ILocalStorageService? storage;
 
-  const ProfileScreen({Key? key, this.storage}) : super(key: key);
+  const ProfileScreen({super.key, this.storage});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -106,17 +108,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ClipRRect(
                         borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(18)),
-                        child: Image.network(
-                          book.coverImageUrl,
+                        child: CachedNetworkImage(
+                          imageUrl: book.coverImageUrl,
                           height: 100,
                           width: 120,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
+                          placeholder: (context, url) => Container(
                             height: 100,
                             width: 120,
                             color: AppColors.bgCardDarker,
-                            child: Icon(Icons.book,
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondaryAccent),
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            height: 100,
+                            width: 120,
+                            color: AppColors.bgCardDarker,
+                            child: const Icon(Icons.book,
                                 color: AppColors.textMuted, size: 32),
                           ),
                         ),
@@ -144,7 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ],
                   ),
-                );
+                ).animate(delay: Duration(milliseconds: 50 * index)).fade(duration: 300.ms).slideX(begin: 0.2, end: 0);
               },
             ),
           ),
@@ -173,7 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(AppConstants.paddingLarge),
+          padding: const EdgeInsets.all(AppConstants.paddingLarge),
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : Column(
@@ -193,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 (user?.name.isNotEmpty ?? false)
                                     ? user!.name[0].toUpperCase()
                                     : 'R',
-                                style: TextStyle(
+                                style: const TextStyle(
                                     color: AppColors.primaryLight,
                                     fontSize: 24,
                                     fontWeight: FontWeight.w700),
@@ -217,14 +229,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         Theme.of(context).textTheme.bodySmall,
                                   ),
                                   const SizedBox(height: 12),
-                                  Row(
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
                                     children: [
                                       _smallStat(
                                           '${_toReadBooks.length}', 'TBR'),
-                                      const SizedBox(width: 12),
                                       _smallStat('${_favoriteBooks.length}',
                                           'Favorites'),
-                                      const SizedBox(width: 12),
                                       _smallStat(
                                           '${_readBooks.length}', 'Read'),
                                     ],

@@ -150,7 +150,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: const EdgeInsets.all(AppConstants.paddingLarge),
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
-              : Column(
+              : SingleChildScrollView(
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -169,6 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 24),
                     _buildSection('Favorites', _favoriteBooks),
                   ],
+                ),
                 ),
         ),
       ),

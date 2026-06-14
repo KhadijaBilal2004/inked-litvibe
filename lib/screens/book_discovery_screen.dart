@@ -167,6 +167,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             FloatingActionButton(
+                              heroTag: 'pass_btn',
                               onPressed: () {
                                 _cardSwiperController.swipe(CardSwiperDirection.left);
                               },
@@ -174,6 +175,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                               child: const Icon(Icons.close),
                             ),
                             FloatingActionButton(
+                              heroTag: 'like_btn',
                               onPressed: () {
                                 _cardSwiperController.swipe(CardSwiperDirection.right);
                               },

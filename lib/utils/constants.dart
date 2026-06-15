@@ -27,33 +27,23 @@ class AppConstants {
   
   // Moods
   static const List<String> moods = [
-    'happy',
-    'sad',
-    'peaceful',
-    'thrilled',
-    'thoughtful',
-    'adventurous',
+    'cheerful',
     'melancholic',
-    'romantic',
-    'mysterious',
-    'inspiring',
-    'nostalgic',
+    'pensive',
     'anxious',
+    'calm',
+    'romantic',
+    'adventurous',
   ];
   
   // Mood Descriptions
   static const Map<String, String> moodDescriptions = {
-    'happy': 'Uplifting & Feel-Good',
-    'sad': 'Deep & Reflective',
-    'peaceful': 'Calm & Serene',
-    'thrilled': 'Exciting & Thrilling',
-    'thoughtful': 'Intellectual & Inspiring',
-    'adventurous': 'Bold & Daring',
-    'melancholic': 'Bittersweet & Haunting',
-    'romantic': 'Love & Connection',
-    'mysterious': 'Dark & Intriguing',
-    'inspiring': 'Uplifting & Empowering',
-    'nostalgic': 'Warm & Reflective',
+    'cheerful': 'Uplifting & Feel-Good',
+    'melancholic': 'Deep & Reflective',
+    'pensive': 'Intellectual & Inspiring',
     'anxious': 'Edgy & Suspenseful',
+    'calm': 'Peaceful & Serene',
+    'romantic': 'Love & Connection',
+    'adventurous': 'Bold & Daring',
   };
 }

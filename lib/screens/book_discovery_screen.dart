@@ -6,6 +6,7 @@ import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 import '../widgets/swipe_card.dart';
+import '../services/quote_service.dart';
 
 class BookDiscoveryScreen extends StatefulWidget {
   final String mood;
@@ -26,8 +27,8 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
   late CardSwiperController _cardSwiperController;
   List<Book> books = [];
   bool isLoading = true;
-  bool showQuote = false;
-  String? currentQuote;
+  bool isRevealed = false;
+  bool _allSwiped = false;
   int currentIndex = 0;
 
   @override
@@ -91,22 +92,19 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
 
     setState(() {
       this.currentIndex = currentIndex ?? this.currentIndex;
-      showQuote = false;
-      currentQuote = null;
+      isRevealed = false;
     });
     return true;
   }
 
+  void _onEnd() {
+    setState(() => _allSwiped = true);
+  }
+
   void _revealBook() {
     if (books.isNotEmpty && currentIndex < books.length) {
-      final book = books[currentIndex];
-      final quotes = book.quotes;
-
       setState(() {
-        currentQuote = quotes.isNotEmpty
-            ? quotes[DateTime.now().millisecondsSinceEpoch % quotes.length]
-            : 'A great book awaits you...';
-        showQuote = true;
+        isRevealed = true;
       });
     }
   }
@@ -116,7 +114,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
-        title: Text('Discover $widget.mood reads'),
+        title: Text('Discover ${widget.mood} reads'),
         elevation: 0,
         backgroundColor: AppColors.bgLight,
         leading: IconButton(
@@ -154,7 +152,35 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                       ],
                     ),
                   )
-                : Padding(
+                : _allSwiped
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.check_circle_outline,
+                                size: 64, color: AppColors.secondaryAccent),
+                            const SizedBox(height: 16),
+                            Text(
+                              'You\'ve seen all the books!',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Head to your profile to see your saved reads.',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton.icon(
+                              onPressed: () =>
+                                  Navigator.of(context).pushReplacementNamed('/profile'),
+                              icon: const Icon(Icons.person),
+                              label: const Text('View Profile'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Padding(
                     padding: const EdgeInsets.all(AppConstants.paddingMedium),
                     child: Column(
                       children: [
@@ -163,11 +189,12 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                             controller: _cardSwiperController,
                             cardsCount: books.length,
                             onSwipe: _onCardSwipe,
+                            onEnd: _onEnd,
                             cardBuilder: (context, index, horizonalThresholdPercentage, verticalThresholdPercentage) {
                               return SwipeCard(
                                 book: books[index],
-                                showQuote: showQuote && index == currentIndex,
-                                currentQuote: currentQuote,
+                                showQuote: !isRevealed || index != currentIndex,
+                                currentQuote: QuoteService.generateQuoteForBook(books[index]),
                                 onRevealBook: _revealBook,
                               );
                             },
@@ -178,6 +205,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             FloatingActionButton(
+                              heroTag: null,
                               onPressed: () {
                                 _cardSwiperController.swipe(CardSwiperDirection.left);
                               },
@@ -185,6 +213,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                               child: const Icon(Icons.close),
                             ),
                             FloatingActionButton(
+                              heroTag: null,
                               onPressed: () {
                                 _cardSwiperController.swipe(CardSwiperDirection.right);
                               },

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/user.dart';
 import '../models/user_preference.dart';
+import '../models/reader_settings.dart';
 
 /// Minimal interface used by widgets/tests to interact with storage.
 abstract class ILocalStorageService {
@@ -94,6 +95,8 @@ class LocalStorageService implements ILocalStorageService {
       toReadBooks: [],
       readBooks: [],
       lastUpdated: DateTime.now(),
+      readingProgress: {},
+      readerSettings: ReaderSettings(),
     ));
     debugPrint('LocalStorageService.registerUser: registered $email');
     return user;
@@ -156,6 +159,8 @@ class LocalStorageService implements ILocalStorageService {
         toReadBooks: [],
         readBooks: [],
         lastUpdated: DateTime.now(),
+        readingProgress: {},
+        readerSettings: ReaderSettings(),
       );
       await savePreferences(defaultPreference);
       return defaultPreference;
@@ -191,5 +196,17 @@ class LocalStorageService implements ILocalStorageService {
     }
     preference.toReadBooks.remove(bookId);
     await savePreferences(preference);
+  }
+
+  Future<void> saveReadingProgress(String userId, String bookId, double offset) async {
+    final preference = await getPreferences(userId);
+    final newProgress = Map<String, double>.from(preference.readingProgress);
+    newProgress[bookId] = offset;
+    await savePreferences(preference.copyWith(readingProgress: newProgress));
+  }
+
+  Future<void> saveReaderSettings(String userId, ReaderSettings settings) async {
+    final preference = await getPreferences(userId);
+    await savePreferences(preference.copyWith(readerSettings: settings));
   }
 }

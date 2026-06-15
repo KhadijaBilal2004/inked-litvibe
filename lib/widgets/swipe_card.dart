@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../theme/app_colors.dart';
@@ -41,14 +42,39 @@ class SwipeCard extends StatelessWidget {
               ],
             ),
           ),
-          child: showQuote ? _buildQuoteView(context) : _buildBookView(context),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 600),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              final rotateAnim = Tween(begin: pi, end: 0.0).animate(animation);
+              return AnimatedBuilder(
+                animation: rotateAnim,
+                child: child,
+                builder: (context, widget) {
+                  final isUnder = (ValueKey(showQuote) != widget?.key);
+                  var tilt = ((animation.value - 0.5).abs() - 0.5) * 0.003;
+                  tilt *= isUnder ? -1.0 : 1.0;
+                  final value = isUnder ? min(rotateAnim.value, pi / 2) : rotateAnim.value;
+                  return Transform(
+                    transform: Matrix4.rotationY(value)..setEntry(3, 0, tilt),
+                    alignment: Alignment.center,
+                    child: widget,
+                  );
+                },
+              );
+            },
+            layoutBuilder: (widget, list) => Stack(children: [widget!, ...list]),
+            child: showQuote 
+                ? _buildQuoteView(context, key: const ValueKey(true)) 
+                : _buildBookView(context, key: const ValueKey(false)),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildQuoteView(BuildContext context) {
+  Widget _buildQuoteView(BuildContext context, {Key? key}) {
     return Container(
+      key: key,
       padding: const EdgeInsets.all(AppConstants.paddingLarge),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -60,14 +86,20 @@ class SwipeCard extends StatelessWidget {
             color: AppColors.secondaryAccent,
           ),
           const SizedBox(height: AppConstants.paddingLarge),
-          Text(
-            currentQuote ?? 'Loading quote...',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontSize: 18,
-                  fontStyle: FontStyle.italic,
-                  height: 1.6,
+          Expanded(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Text(
+                  currentQuote ?? 'Loading quote...',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontSize: 18,
+                        fontStyle: FontStyle.italic,
+                        height: 1.6,
+                      ),
                 ),
+              ),
+            ),
           ),
           const SizedBox(height: AppConstants.paddingXLarge),
           Container(
@@ -80,7 +112,7 @@ class SwipeCard extends StatelessWidget {
               border: Border.all(color: AppColors.secondaryAccent),
             ),
             child: Text(
-              'Tap to reveal the book →',
+              'Tap to reveal the book',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: AppColors.secondaryAccent,
                   ),
@@ -88,37 +120,67 @@ class SwipeCard extends StatelessWidget {
           ),
         ],
       ),
-    ).animate().fade(duration: 400.ms).scale(
-          begin: const Offset(0.95, 0.95),
-          end: const Offset(1.0, 1.0),
-        );
+    );
   }
 
-  Widget _buildBookView(BuildContext context) {
+  Widget _buildBookView(BuildContext context, {Key? key}) {
+    final hasImage = book.coverImageUrl.isNotEmpty;
+    
     return Stack(
+      key: key,
       children: [
-        // Background Image
+        // Background Image or Placeholder
         Positioned.fill(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(AppConstants.radiusXLarge),
-            child: CachedNetworkImage(
-              imageUrl: book.coverImageUrl,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                color: AppColors.bgCardLight,
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondaryAccent),
+            child: hasImage 
+                ? CachedNetworkImage(
+                    imageUrl: book.coverImageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      color: AppColors.bgCardLight,
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondaryAccent),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColors.bgCardLight,
+                      child: const Center(
+                        child: Icon(Icons.broken_image, color: AppColors.textMuted, size: 48),
+                      ),
+                    ),
+                  )
+                : Container(
+                    color: AppColors.bgCardLight,
+                    padding: const EdgeInsets.all(AppConstants.paddingLarge),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              book.title,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: AppConstants.paddingMedium),
+                            Text(
+                              book.author,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                color: AppColors.textSecondary,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: AppColors.bgCardLight,
-                child: const Center(
-                  child: Icon(Icons.broken_image, color: AppColors.textMuted, size: 48),
-                ),
-              ),
-            ),
           ),
         ),
         // Overlay Gradient
@@ -188,6 +250,6 @@ class SwipeCard extends StatelessWidget {
           ),
         ),
       ],
-    ).animate().fade(duration: 400.ms);
+    );
   }
 }

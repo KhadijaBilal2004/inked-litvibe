@@ -6,6 +6,7 @@ import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'reader_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ILocalStorageService? storage;
@@ -88,73 +89,103 @@ class _ProfileScreenState extends State<ProfileScreen> {
           )
         else
           SizedBox(
-            height: 170,
+            height: 220,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: books.length,
               separatorBuilder: (_, __) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
                 final book = books[index];
-                return Container(
-                  width: 120,
-                  decoration: BoxDecoration(
-                    color: AppColors.bgCard,
-                    borderRadius:
-                        BorderRadius.circular(AppConstants.radiusLarge),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(18)),
-                        child: CachedNetworkImage(
-                          imageUrl: book.coverImageUrl,
-                          height: 100,
-                          width: 120,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            height: 100,
-                            width: 120,
-                            color: AppColors.bgCardDarker,
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondaryAccent),
-                                strokeWidth: 2,
+                final hasImage = book.coverImageUrl.isNotEmpty;
+                
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ReaderScreen(book: book),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 120,
+                    decoration: BoxDecoration(
+                      color: AppColors.bgCard,
+                      borderRadius:
+                          BorderRadius.circular(AppConstants.radiusLarge),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(18)),
+                          child: hasImage 
+                              ? CachedNetworkImage(
+                                  imageUrl: book.coverImageUrl,
+                                  height: 100,
+                                  width: 120,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => Container(
+                                    height: 100,
+                                    width: 120,
+                                    color: AppColors.bgCardDarker,
+                                    child: const Center(
+                                      child: CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondaryAccent),
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) => Container(
+                                    height: 100,
+                                    width: 120,
+                                    color: AppColors.bgCardDarker,
+                                    child: const Icon(Icons.book,
+                                        color: AppColors.textMuted, size: 32),
+                                  ),
+                                )
+                              : Container(
+                                  height: 100,
+                                  width: 120,
+                                  color: AppColors.bgCardDarker,
+                                  padding: const EdgeInsets.all(8),
+                                  child: Center(
+                                    child: Text(
+                                      book.title,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                book.title,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleSmall,
                               ),
-                            ),
-                          ),
-                          errorWidget: (context, url, error) => Container(
-                            height: 100,
-                            width: 120,
-                            color: AppColors.bgCardDarker,
-                            child: const Icon(Icons.book,
-                                color: AppColors.textMuted, size: 32),
+                              const SizedBox(height: 4),
+                              Text(
+                                book.author,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              book.title,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              book.author,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ).animate(delay: Duration(milliseconds: 50 * index)).fade(duration: 300.ms).slideX(begin: 0.2, end: 0);
               },

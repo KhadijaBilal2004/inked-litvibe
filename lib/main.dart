@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'screens/auth_screen.dart';
 import 'screens/book_discovery_screen.dart';
 import 'screens/mood_selection_screen.dart';
@@ -11,6 +13,10 @@ import 'utils/constants.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isWindows || Platform.isLinux) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
   await LocalStorageService.init();
   runApp(const InkedApp());
 }

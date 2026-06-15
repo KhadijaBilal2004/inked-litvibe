@@ -1,3 +1,5 @@
+import 'reader_settings.dart';
+
 class UserPreference {
   final String userId;
   final List<String> favoriteBooks;
@@ -6,6 +8,8 @@ class UserPreference {
   final List<String> readBooks;
   final Map<String, int> moodFrequency;
   final DateTime lastUpdated;
+  final Map<String, double> readingProgress;
+  final ReaderSettings readerSettings;
 
   UserPreference({
     required this.userId,
@@ -15,6 +19,8 @@ class UserPreference {
     required this.readBooks,
     required this.moodFrequency,
     required this.lastUpdated,
+    required this.readingProgress,
+    required this.readerSettings,
   });
 
   factory UserPreference.fromJson(Map<String, dynamic> json) {
@@ -28,6 +34,10 @@ class UserPreference {
       lastUpdated: json['lastUpdated'] != null
           ? DateTime.parse(json['lastUpdated'])
           : DateTime.now(),
+      readingProgress: Map<String, double>.from(json['readingProgress'] ?? {}),
+      readerSettings: json['readerSettings'] != null 
+          ? ReaderSettings.fromJson(Map<String, dynamic>.from(json['readerSettings']))
+          : ReaderSettings(),
     );
   }
 
@@ -40,6 +50,8 @@ class UserPreference {
       'readBooks': readBooks,
       'moodFrequency': moodFrequency,
       'lastUpdated': lastUpdated.toIso8601String(),
+      'readingProgress': readingProgress,
+      'readerSettings': readerSettings.toJson(),
     };
   }
 
@@ -51,6 +63,8 @@ class UserPreference {
     List<String>? readBooks,
     Map<String, int>? moodFrequency,
     DateTime? lastUpdated,
+    Map<String, double>? readingProgress,
+    ReaderSettings? readerSettings,
   }) {
     return UserPreference(
       userId: userId ?? this.userId,
@@ -60,6 +74,8 @@ class UserPreference {
       readBooks: readBooks ?? List<String>.from(this.readBooks),
       moodFrequency: moodFrequency ?? Map<String, int>.from(this.moodFrequency),
       lastUpdated: lastUpdated ?? this.lastUpdated,
+      readingProgress: readingProgress ?? Map<String, double>.from(this.readingProgress),
+      readerSettings: readerSettings ?? this.readerSettings,
     );
   }
 }

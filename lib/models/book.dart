@@ -10,7 +10,12 @@ class Book {
   final String publishedYear;
   final String mood;
   final List<String> quotes;
-  final String mongodbId;
+  
+  // New SQLite fields
+  final String? gutenbergId;
+  final String? language;
+  final int? wordCount;
+  final String? fullText;
 
   Book({
     required this.id,
@@ -24,24 +29,56 @@ class Book {
     required this.publishedYear,
     required this.mood,
     required this.quotes,
-    required this.mongodbId,
+    this.gutenbergId,
+    this.language,
+    this.wordCount,
+    this.fullText,
   });
 
   // Factory constructor for creating a Book instance from JSON
   factory Book.fromJson(Map<String, dynamic> json) {
     return Book(
-      id: json['id'] ?? '',
+      id: json['id']?.toString() ?? '',
       title: json['title'] ?? 'Unknown Title',
       author: json['author'] ?? 'Unknown Author',
       description: json['description'] ?? '',
       coverImageUrl: json['coverImageUrl'] ?? '',
-      genres: List<String>.from(json['genres'] ?? []),
+      genres: json['genres'] != null ? List<String>.from(json['genres']) : [],
       rating: (json['rating'] ?? 0.0).toDouble(),
       pages: json['pages'] ?? 0,
-      publishedYear: json['publishedYear'] ?? '',
-      mood: json['mood'] ?? '',
-      quotes: List<String>.from(json['quotes'] ?? []),
-      mongodbId: json['_id'] ?? '',
+      publishedYear: json['publishedYear']?.toString() ?? '',
+      mood: json['mood']?.toLowerCase() ?? '',
+      quotes: json['quotes'] != null ? List<String>.from(json['quotes']) : [],
+    );
+  }
+
+  // Factory constructor for creating a Book instance from SQLite Map
+  factory Book.fromMap(Map<String, dynamic> map) {
+    return Book(
+      id: map['id']?.toString() ?? '',
+      title: map['title'] ?? 'Unknown Title',
+      author: map['author'] ?? 'Unknown Author',
+      // Generate a short description from the text if available
+      description: map['full_text'] != null && map['full_text'].length > 100 
+          ? '${map['full_text'].substring(0, 100)}...' 
+          : 'No description available.',
+      coverImageUrl: map['cover_image_url'] != null 
+          ? map['cover_image_url'].toString().contains('placehold.co') && !map['cover_image_url'].toString().contains('.png')
+              ? map['cover_image_url'].toString().contains('?')
+                  ? map['cover_image_url'].toString().replaceFirst('?', '.png?')
+                  : '${map['cover_image_url']}.png'
+              : map['cover_image_url'].toString()
+          : '', // Parsed from database and formatted for PNG
+      genres: [], // Add logic later if needed
+      rating: (map['rating'] ?? 0).toDouble(),
+      pages: map['word_count'] != null ? map['word_count'] ~/ 250 : 0, // Estimate pages from word count
+      publishedYear: 'N/A', // PG metadata doesn't always have year
+      mood: map['mood']?.toLowerCase() ?? '',
+      quotes: [], // Will be extracted dynamically from full_text in UI
+      gutenbergId: map['gutenberg_id']?.toString(),
+      language: map['language'],
+      wordCount: map['word_count'],
+      fullText: map['full_text'],
     );
   }
 
@@ -59,7 +96,10 @@ class Book {
       'publishedYear': publishedYear,
       'mood': mood,
       'quotes': quotes,
-      '_id': mongodbId,
+      'gutenbergId': gutenbergId,
+      'language': language,
+      'wordCount': wordCount,
+      // intentionally omitting fullText to avoid huge JSON payloads
     };
   }
 
@@ -76,7 +116,10 @@ class Book {
     String? publishedYear,
     String? mood,
     List<String>? quotes,
-    String? mongodbId,
+    String? gutenbergId,
+    String? language,
+    int? wordCount,
+    String? fullText,
   }) {
     return Book(
       id: id ?? this.id,
@@ -90,7 +133,10 @@ class Book {
       publishedYear: publishedYear ?? this.publishedYear,
       mood: mood ?? this.mood,
       quotes: quotes ?? this.quotes,
-      mongodbId: mongodbId ?? this.mongodbId,
+      gutenbergId: gutenbergId ?? this.gutenbergId,
+      language: language ?? this.language,
+      wordCount: wordCount ?? this.wordCount,
+      fullText: fullText ?? this.fullText,
     );
   }
 }

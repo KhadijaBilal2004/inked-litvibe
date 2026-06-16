@@ -74,11 +74,6 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
       } catch (e) {
         debugPrint('Could not save to-read book: $e');
       }
-      try {
-        (storage as dynamic).addToFavorites(user.id, book.id);
-      } catch (e) {
-        debugPrint('Could not save favorite book: $e');
-      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Added "${book.title}" to your To Read list.')),
       );
@@ -117,11 +112,11 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
-        title: Text('Discover ${widget.mood} reads'),
+        title: Text('Discover ${widget.mood} reads', style: const TextStyle(color: AppColors.textPrimary)),
         elevation: 0,
-        backgroundColor: AppColors.bgLight,
+        backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -212,16 +207,20 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                               onPressed: () {
                                 _cardSwiperController.swipe(CardSwiperDirection.left);
                               },
-                              backgroundColor: AppColors.accentRed,
-                              child: const Icon(Icons.close),
+                              backgroundColor: AppColors.bgCard,
+                              elevation: 0,
+                              shape: CircleBorder(side: BorderSide(color: AppColors.textMuted.withValues(alpha: 0.3))),
+                              child: const Icon(Icons.close_rounded, color: AppColors.textSecondary, size: 32),
                             ),
                             FloatingActionButton(
                               heroTag: null,
                               onPressed: () {
                                 _cardSwiperController.swipe(CardSwiperDirection.right);
                               },
-                              backgroundColor: AppColors.accentGold,
-                              child: const Icon(Icons.favorite),
+                              backgroundColor: AppColors.bgCard,
+                              elevation: 0,
+                              shape: CircleBorder(side: BorderSide(color: AppColors.primaryAccent.withValues(alpha: 0.5))),
+                              child: const Icon(Icons.bookmark_border_rounded, color: AppColors.primaryAccent, size: 32),
                             ),
                           ],
                         ),

@@ -147,9 +147,16 @@ class _AuthScreenState extends State<AuthScreen> {
                         if (!_isLoggingIn) ...[
                           TextFormField(
                             controller: _nameController,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Your name',
-                              prefixIcon: Icon(Icons.person),
+                              prefixIcon: const Icon(Icons.person_outline_rounded, color: AppColors.textSecondary),
+                              filled: true,
+                              fillColor: AppColors.bgCardLight,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(32.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                             ),
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
@@ -162,9 +169,16 @@ class _AuthScreenState extends State<AuthScreen> {
                         ],
                         TextFormField(
                           controller: _emailController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'Email address',
-                            prefixIcon: Icon(Icons.email),
+                            prefixIcon: const Icon(Icons.email_outlined, color: AppColors.textSecondary),
+                            filled: true,
+                            fillColor: AppColors.bgCardLight,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(32.0),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                           ),
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
@@ -180,9 +194,16 @@ class _AuthScreenState extends State<AuthScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _passwordController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'Password',
-                            prefixIcon: Icon(Icons.lock),
+                            prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColors.textSecondary),
+                            filled: true,
+                            fillColor: AppColors.bgCardLight,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(32.0),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                           ),
                           obscureText: true,
                           validator: (value) {
@@ -211,10 +232,14 @@ class _AuthScreenState extends State<AuthScreen> {
                   ],
                   ElevatedButton(
                     onPressed: _isSubmitting ? null : _submit,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Text(_isLoggingIn ? 'Sign in' : 'Create account'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryAccent,
+                      foregroundColor: AppColors.primaryLight,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      elevation: 0,
+                      shape: const StadiumBorder(),
                     ),
+                    child: Text(_isLoggingIn ? 'Sign in' : 'Create account', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 12),
                   TextButton(

@@ -96,7 +96,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
       context: context,
       backgroundColor: AppColors.bgCardLight,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return StatefulBuilder(
@@ -107,6 +107,17 @@ class _ReaderScreenState extends State<ReaderScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Center(
+                    child: Container(
+                      width: 48,
+                      height: 5,
+                      margin: const EdgeInsets.only(bottom: 24),
+                      decoration: BoxDecoration(
+                        color: AppColors.textMuted.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
                   Text('Reader Settings', style: Theme.of(context).textTheme.headlineSmall),
                   const SizedBox(height: AppConstants.paddingLarge),
                   
@@ -185,11 +196,11 @@ class _ReaderScreenState extends State<ReaderScreen> {
         _persistSettings();
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
           color: bg,
-          border: Border.all(color: isSel ? AppColors.primaryAccent : Colors.grey.withValues(alpha: 0.3), width: 2),
-          borderRadius: BorderRadius.circular(8),
+          border: isSel ? Border.all(color: AppColors.primaryAccent, width: 2) : Border.all(color: Colors.transparent, width: 2),
+          borderRadius: BorderRadius.circular(24),
         ),
         child: Text(label, style: TextStyle(color: fg, fontWeight: FontWeight.bold)),
       ),

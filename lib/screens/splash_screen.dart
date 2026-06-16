@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 
@@ -35,9 +36,13 @@ class _SplashScreenState extends State<SplashScreen>
 
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
+      
+      final user = LocalStorageService.instance.currentUser;
+      final nextRoute = user != null ? '/mood-selection' : '/welcome';
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        Navigator.of(context).pushReplacementNamed('/auth');
+        Navigator.of(context).pushReplacementNamed(nextRoute);
       });
     });
   }

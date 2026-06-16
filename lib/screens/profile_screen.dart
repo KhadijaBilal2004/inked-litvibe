@@ -91,6 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           SizedBox(
             height: 220,
             child: ListView.separated(
+              physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               itemCount: books.length,
               separatorBuilder: (_, __) => const SizedBox(width: 14),
@@ -235,8 +236,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Profile header — paperback card style
-                    Card(
-                      color: AppColors.bgCardLight,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.bgCard,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 1.5),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(18),
                         child: Row(
@@ -300,20 +305,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () => _scrollTo(_toReadKey),
-                            icon: const Icon(Icons.bookmark_border),
-                            label: const Text('My TBR'),
+                            icon: const Icon(Icons.bookmark_border_rounded),
+                            label: const Text('My TBR', style: TextStyle(fontWeight: FontWeight.bold)),
                             style: ElevatedButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 14)),
+                              elevation: 0,
+                              shape: const StadiumBorder(),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () => _scrollTo(_favKey),
-                            icon: const Icon(Icons.favorite_border),
-                            label: const Text('Favorites'),
+                            icon: const Icon(Icons.favorite_border_rounded),
+                            label: const Text('Favorites', style: TextStyle(fontWeight: FontWeight.bold)),
                             style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              shape: const StadiumBorder(),
                               backgroundColor: AppColors.accentGold,
                               foregroundColor: AppColors.primaryLight,
                               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -324,9 +333,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () => _scrollTo(_readKey),
-                            icon: const Icon(Icons.book),
-                            label: const Text('Read'),
+                            icon: const Icon(Icons.menu_book_rounded),
+                            label: const Text('Read', style: TextStyle(fontWeight: FontWeight.bold)),
                             style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              shape: const StadiumBorder(),
                               backgroundColor: AppColors.primaryAccent,
                               foregroundColor: AppColors.primaryLight,
                               padding: const EdgeInsets.symmetric(vertical: 14),

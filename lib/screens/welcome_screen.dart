@@ -17,13 +17,20 @@ class WelcomeScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  AppConstants.appName,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                        letterSpacing: 2,
-                        fontWeight: FontWeight.bold,
-                      ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.history_edu_rounded, color: AppColors.primaryAccent, size: 36),
+                    const SizedBox(width: 12),
+                    Text(
+                      AppConstants.appName,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                            letterSpacing: 2,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -40,9 +47,11 @@ class WelcomeScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.secondaryAccent,
                     foregroundColor: AppColors.primaryLight,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    elevation: 0,
+                    shape: const StadiumBorder(),
                   ),
-                  child: const Text('Login'),
+                  child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(height: 16),
                 OutlinedButton(
@@ -51,11 +60,12 @@ class WelcomeScreen extends StatelessWidget {
                         .pushReplacementNamed('/auth', arguments: false);
                   },
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.primaryAccent),
+                    side: const BorderSide(color: AppColors.primaryAccent, width: 1.5),
                     foregroundColor: AppColors.textPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: const StadiumBorder(),
                   ),
-                  child: const Text('Sign Up'),
+                  child: const Text('Sign Up', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(height: 32),
                 Text(

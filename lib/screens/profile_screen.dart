@@ -203,12 +203,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
         backgroundColor: AppColors.bgLight,
-        title: const Text('My Profile'),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              Navigator.of(context).pushReplacementNamed('/mood-selection');
+            }
+          },
+        ),
+        title: const Text('My Profile', style: TextStyle(color: AppColors.textPrimary)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout_rounded, color: AppColors.error),
             onPressed: () async {
               await LocalStorageService.instance.logout();
+              if (!context.mounted) return;
               Navigator.of(context).pushReplacementNamed('/auth');
             },
           ),

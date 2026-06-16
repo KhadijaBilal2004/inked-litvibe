@@ -48,16 +48,19 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
   Future<void> _loadBooks() async {
     try {
       final loadedBooks = await _bookService.getBooksByMood(widget.mood);
+      if (!mounted) return;
       setState(() {
         books = loadedBooks;
         isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         isLoading = false;
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading books: $e')),
+        const SnackBar(content: Text('Failed to load books for this mood')),
       );
     }
   }

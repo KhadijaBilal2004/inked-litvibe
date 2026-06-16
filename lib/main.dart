@@ -27,7 +27,7 @@ class InkedApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initialRoute = LocalStorageService.instance.currentUser != null
-        ? '/profile'
+        ? '/mood-selection'
         : '/welcome';
 
     return MaterialApp(

@@ -1,4 +1,6 @@
 import 'reader_settings.dart';
+import 'saved_quote.dart';
+import 'bookmark.dart';
 
 class UserPreference {
   final String userId;
@@ -10,6 +12,8 @@ class UserPreference {
   final DateTime lastUpdated;
   final Map<String, double> readingProgress;
   final ReaderSettings readerSettings;
+  final List<SavedQuote> savedQuotes;
+  final List<Bookmark> bookmarks;
 
   UserPreference({
     required this.userId,
@@ -21,6 +25,8 @@ class UserPreference {
     required this.lastUpdated,
     required this.readingProgress,
     required this.readerSettings,
+    required this.savedQuotes,
+    required this.bookmarks,
   });
 
   factory UserPreference.fromJson(Map<String, dynamic> json) {
@@ -38,6 +44,12 @@ class UserPreference {
       readerSettings: json['readerSettings'] != null 
           ? ReaderSettings.fromJson(Map<String, dynamic>.from(json['readerSettings']))
           : ReaderSettings(),
+      savedQuotes: json['savedQuotes'] != null
+          ? (json['savedQuotes'] as List).map((e) => SavedQuote.fromJson(Map<String, dynamic>.from(e))).toList()
+          : [],
+      bookmarks: json['bookmarks'] != null
+          ? (json['bookmarks'] as List).map((e) => Bookmark.fromJson(Map<String, dynamic>.from(e))).toList()
+          : [],
     );
   }
 
@@ -52,6 +64,8 @@ class UserPreference {
       'lastUpdated': lastUpdated.toIso8601String(),
       'readingProgress': readingProgress,
       'readerSettings': readerSettings.toJson(),
+      'savedQuotes': savedQuotes.map((q) => q.toJson()).toList(),
+      'bookmarks': bookmarks.map((b) => b.toJson()).toList(),
     };
   }
 
@@ -65,6 +79,8 @@ class UserPreference {
     DateTime? lastUpdated,
     Map<String, double>? readingProgress,
     ReaderSettings? readerSettings,
+    List<SavedQuote>? savedQuotes,
+    List<Bookmark>? bookmarks,
   }) {
     return UserPreference(
       userId: userId ?? this.userId,
@@ -76,6 +92,8 @@ class UserPreference {
       lastUpdated: lastUpdated ?? this.lastUpdated,
       readingProgress: readingProgress ?? Map<String, double>.from(this.readingProgress),
       readerSettings: readerSettings ?? this.readerSettings,
+      savedQuotes: savedQuotes ?? List<SavedQuote>.from(this.savedQuotes),
+      bookmarks: bookmarks ?? List<Bookmark>.from(this.bookmarks),
     );
   }
 }

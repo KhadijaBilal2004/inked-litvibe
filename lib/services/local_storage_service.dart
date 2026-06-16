@@ -3,6 +3,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../models/user.dart';
 import '../models/user_preference.dart';
 import '../models/reader_settings.dart';
+import '../models/saved_quote.dart';
+import '../models/bookmark.dart';
 
 /// Minimal interface used by widgets/tests to interact with storage.
 abstract class ILocalStorageService {
@@ -97,6 +99,8 @@ class LocalStorageService implements ILocalStorageService {
       lastUpdated: DateTime.now(),
       readingProgress: {},
       readerSettings: ReaderSettings(),
+      savedQuotes: [],
+      bookmarks: [],
     ));
     debugPrint('LocalStorageService.registerUser: registered $email');
     return user;
@@ -161,6 +165,8 @@ class LocalStorageService implements ILocalStorageService {
         lastUpdated: DateTime.now(),
         readingProgress: {},
         readerSettings: ReaderSettings(),
+        savedQuotes: [],
+        bookmarks: [],
       );
       await savePreferences(defaultPreference);
       return defaultPreference;
@@ -208,5 +214,33 @@ class LocalStorageService implements ILocalStorageService {
   Future<void> saveReaderSettings(String userId, ReaderSettings settings) async {
     final preference = await getPreferences(userId);
     await savePreferences(preference.copyWith(readerSettings: settings));
+  }
+
+  Future<void> saveQuote(String userId, SavedQuote quote) async {
+    final preference = await getPreferences(userId);
+    final quotes = List<SavedQuote>.from(preference.savedQuotes);
+    quotes.add(quote);
+    await savePreferences(preference.copyWith(savedQuotes: quotes));
+  }
+
+  Future<void> removeQuote(String userId, String quoteId) async {
+    final preference = await getPreferences(userId);
+    final quotes = List<SavedQuote>.from(preference.savedQuotes);
+    quotes.removeWhere((q) => q.id == quoteId);
+    await savePreferences(preference.copyWith(savedQuotes: quotes));
+  }
+
+  Future<void> saveBookmark(String userId, Bookmark bookmark) async {
+    final preference = await getPreferences(userId);
+    final bookmarks = List<Bookmark>.from(preference.bookmarks);
+    bookmarks.add(bookmark);
+    await savePreferences(preference.copyWith(bookmarks: bookmarks));
+  }
+
+  Future<void> removeBookmark(String userId, String bookmarkId) async {
+    final preference = await getPreferences(userId);
+    final bookmarks = List<Bookmark>.from(preference.bookmarks);
+    bookmarks.removeWhere((b) => b.id == bookmarkId);
+    await savePreferences(preference.copyWith(bookmarks: bookmarks));
   }
 }

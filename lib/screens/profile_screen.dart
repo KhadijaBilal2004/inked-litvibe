@@ -7,6 +7,8 @@ import '../utils/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'reader_screen.dart';
+import 'quote_gallery_screen.dart';
+import 'bookmarks_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ILocalStorageService? storage;
@@ -329,7 +331,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () => _scrollTo(_readKey),
@@ -339,6 +346,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               elevation: 0,
                               shape: const StadiumBorder(),
                               backgroundColor: AppColors.primaryAccent,
+                              foregroundColor: AppColors.primaryLight,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => const QuoteGalleryScreen()),
+                              );
+                            },
+                            icon: const Icon(Icons.format_quote_rounded),
+                            label: const Text('Quotes', style: TextStyle(fontWeight: FontWeight.bold)),
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              shape: const StadiumBorder(),
+                              backgroundColor: AppColors.secondaryAccent,
+                              foregroundColor: AppColors.primaryLight,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => const BookmarksScreen()),
+                              );
+                            },
+                            icon: const Icon(Icons.bookmark_rounded),
+                            label: const Text('Bookmarks', style: TextStyle(fontWeight: FontWeight.bold)),
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              shape: const StadiumBorder(),
+                              backgroundColor: AppColors.accentGold,
                               foregroundColor: AppColors.primaryLight,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                             ),

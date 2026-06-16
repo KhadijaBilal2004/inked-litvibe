@@ -39,23 +39,39 @@ class QuoteService {
 
     // 2. Try pre-existing quotes array
     if (book.quotes.isNotEmpty) {
-      return book.quotes[DateTime.now().millisecondsSinceEpoch % book.quotes.length];
+      return book.quotes[book.id.hashCode.abs() % book.quotes.length];
     } 
     
     // 3. Fallback to extracting from full text
-    if (book.fullText != null && book.fullText!.length > 500) {
-      final start = (book.fullText!.length ~/ 2) + (DateTime.now().millisecondsSinceEpoch % 5000);
-      if (start < book.fullText!.length - 300) {
-        final text = book.fullText!.substring(start, start + 300);
-        final firstPeriod = text.indexOf('.');
-        final lastPeriod = text.lastIndexOf('.');
-        if (firstPeriod != -1 && lastPeriod != -1 && firstPeriod < lastPeriod) {
-          return '"${text.substring(firstPeriod + 1, lastPeriod + 1).trim()}"';
+    if (book.fullText != null && book.fullText!.isNotEmpty) {
+      if (book.fullText!.length > 500) {
+        final start = (book.fullText!.length ~/ 2) + (book.id.hashCode.abs() % 5000);
+        if (start < book.fullText!.length - 300) {
+          final text = book.fullText!.substring(start, start + 300);
+          final firstPeriod = text.indexOf('.');
+          final lastPeriod = text.lastIndexOf('.');
+          if (firstPeriod != -1 && lastPeriod != -1 && firstPeriod < lastPeriod) {
+            String quote = text.substring(firstPeriod + 1, lastPeriod + 1).trim();
+            quote = quote.replaceAll(RegExp(r'\s+'), ' ');
+            if (quote.length > 20) {
+              return '"$quote"';
+            }
+          }
+          
+          // If we couldn't find neat sentence boundaries, just grab a clean chunk!
+          String cleanText = text.replaceAll(RegExp(r'\s+'), ' ');
+          int end = cleanText.length > 150 ? 150 : cleanText.length;
+          return '"${cleanText.substring(0, end).trim()}..."';
         }
       }
+      
+      // If the book is really short (e.g. less than 500 chars), just return the whole thing
+      String cleanText = book.fullText!.replaceAll(RegExp(r'\s+'), ' ');
+      int end = cleanText.length > 150 ? 150 : cleanText.length;
+      return '"${cleanText.substring(0, end).trim()}..."';
     }
 
-    // 4. Ultimate fallback
+    // 4. Ultimate fallback (only if fullText is completely null/empty)
     return 'A captivating story awaits you...\nTap to reveal the book!';
   }
 }

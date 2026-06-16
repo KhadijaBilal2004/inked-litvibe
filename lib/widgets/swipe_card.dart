@@ -23,7 +23,7 @@ class SwipeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: showQuote ? onRevealBook : null,
+      onTap: onRevealBook,
       child: Card(
         color: AppColors.bgCard,
         elevation: 12,

@@ -18,7 +18,7 @@ class SqliteService {
 
   static Future<Database> initDb() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "app_books_v4.db");
+    String path = join(documentsDirectory.path, "app_books_v7.db");
 
     // Only copy if the database doesn't exist
     if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {

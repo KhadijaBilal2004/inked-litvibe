@@ -52,15 +52,42 @@ class Book {
     );
   }
 
-  // Factory constructor for creating a Book instance from SQLite Map
   factory Book.fromMap(Map<String, dynamic> map) {
+    String rawTitle = map['title']?.toString() ?? '';
+    String rawAuthor = map['author']?.toString() ?? '';
+    final fullTextStr = map['full_text']?.toString() ?? '';
+
+    // If the title is missing or just says "produced by", try to parse from full text.
+    if (rawTitle.isEmpty || rawTitle.toLowerCase().contains('produced by')) {
+      rawTitle = 'Unknown Title';
+    }
+    if (rawAuthor.isEmpty) {
+      rawAuthor = 'Unknown Author';
+    }
+
+    if ((rawTitle == 'Unknown Title' || rawAuthor == 'Unknown Author') && fullTextStr.isNotEmpty) {
+      final lines = fullTextStr.split('\n').take(50).toList();
+      for (var line in lines) {
+        if (rawTitle == 'Unknown Title' && line.startsWith('Title: ')) {
+          rawTitle = line.substring(7).trim();
+        }
+        if (rawAuthor == 'Unknown Author' && line.startsWith('Author: ')) {
+          rawAuthor = line.substring(8).trim();
+        }
+      }
+    }
+
+    // Ultimate fallback if still unknown
+    if (rawTitle.isEmpty) rawTitle = 'Unknown Title';
+    if (rawAuthor.isEmpty) rawAuthor = 'Unknown Author';
+
     return Book(
       id: map['id']?.toString() ?? '',
-      title: map['title'] ?? 'Unknown Title',
-      author: map['author'] ?? 'Unknown Author',
+      title: rawTitle,
+      author: rawAuthor,
       // Generate a short description from the text if available
-      description: map['full_text'] != null && map['full_text'].length > 100 
-          ? '${map['full_text'].substring(0, 100)}...' 
+      description: fullTextStr.length > 100 
+          ? '${fullTextStr.substring(0, 100)}...' 
           : 'No description available.',
       coverImageUrl: map['cover_image_url'] != null 
           ? map['cover_image_url'].toString().contains('placehold.co') && !map['cover_image_url'].toString().contains('.png')

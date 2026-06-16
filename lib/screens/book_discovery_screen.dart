@@ -102,7 +102,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
   void _revealBook() {
     if (books.isNotEmpty && currentIndex < books.length) {
       setState(() {
-        isRevealed = true;
+        isRevealed = !isRevealed;
       });
     }
   }

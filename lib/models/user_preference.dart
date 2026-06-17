@@ -1,6 +1,9 @@
 import 'reader_settings.dart';
 import 'saved_quote.dart';
 import 'bookmark.dart';
+import 'highlight.dart';
+import 'custom_collection.dart';
+import 'review.dart';
 
 class UserPreference {
   final String userId;
@@ -14,6 +17,9 @@ class UserPreference {
   final ReaderSettings readerSettings;
   final List<SavedQuote> savedQuotes;
   final List<Bookmark> bookmarks;
+  final List<Highlight> highlights;
+  final List<CustomCollection> collections;
+  final List<Review> reviews;
 
   UserPreference({
     required this.userId,
@@ -27,6 +33,9 @@ class UserPreference {
     required this.readerSettings,
     required this.savedQuotes,
     required this.bookmarks,
+    required this.highlights,
+    required this.collections,
+    required this.reviews,
   });
 
   factory UserPreference.fromJson(Map<String, dynamic> json) {
@@ -50,6 +59,15 @@ class UserPreference {
       bookmarks: json['bookmarks'] != null
           ? (json['bookmarks'] as List).map((e) => Bookmark.fromJson(Map<String, dynamic>.from(e))).toList()
           : [],
+      highlights: json['highlights'] != null
+          ? (json['highlights'] as List).map((e) => Highlight.fromJson(Map<String, dynamic>.from(e))).toList()
+          : [],
+      collections: json['collections'] != null
+          ? (json['collections'] as List).map((e) => CustomCollection.fromJson(Map<String, dynamic>.from(e))).toList()
+          : [],
+      reviews: json['reviews'] != null
+          ? (json['reviews'] as List).map((e) => Review.fromJson(Map<String, dynamic>.from(e))).toList()
+          : [],
     );
   }
 
@@ -66,6 +84,9 @@ class UserPreference {
       'readerSettings': readerSettings.toJson(),
       'savedQuotes': savedQuotes.map((q) => q.toJson()).toList(),
       'bookmarks': bookmarks.map((b) => b.toJson()).toList(),
+      'highlights': highlights.map((h) => h.toJson()).toList(),
+      'collections': collections.map((c) => c.toJson()).toList(),
+      'reviews': reviews.map((r) => r.toJson()).toList(),
     };
   }
 
@@ -81,6 +102,9 @@ class UserPreference {
     ReaderSettings? readerSettings,
     List<SavedQuote>? savedQuotes,
     List<Bookmark>? bookmarks,
+    List<Highlight>? highlights,
+    List<CustomCollection>? collections,
+    List<Review>? reviews,
   }) {
     return UserPreference(
       userId: userId ?? this.userId,
@@ -94,6 +118,9 @@ class UserPreference {
       readerSettings: readerSettings ?? this.readerSettings,
       savedQuotes: savedQuotes ?? List<SavedQuote>.from(this.savedQuotes),
       bookmarks: bookmarks ?? List<Bookmark>.from(this.bookmarks),
+      highlights: highlights ?? List<Highlight>.from(this.highlights),
+      collections: collections ?? List<CustomCollection>.from(this.collections),
+      reviews: reviews ?? List<Review>.from(this.reviews),
     );
   }
 }

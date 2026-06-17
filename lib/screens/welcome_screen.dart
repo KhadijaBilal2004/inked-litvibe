@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../widgets/bouncing_button.dart';
+import '../widgets/global_background.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -9,11 +12,14 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgLight,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+      body: GlobalBackground(
+        child: SafeArea(
           child: Center(
-            child: Column(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -39,41 +45,56 @@ class WelcomeScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 48),
-                ElevatedButton(
+                BouncingButton(
                   onPressed: () {
                     Navigator.of(context)
                         .pushReplacementNamed('/auth', arguments: true);
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.secondaryAccent,
-                    foregroundColor: AppColors.primaryLight,
+                  child: Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 18),
-                    elevation: 0,
-                    shape: const StadiumBorder(),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondaryAccent,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.secondaryAccent.withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryLight),
+                    ),
                   ),
-                  child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(height: 16),
-                OutlinedButton(
+                BouncingButton(
                   onPressed: () {
                     Navigator.of(context)
                         .pushReplacementNamed('/auth', arguments: false);
                   },
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.primaryAccent, width: 1.5),
-                    foregroundColor: AppColors.textPrimary,
+                  child: Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: const StadiumBorder(),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.primaryAccent, width: 1.5),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                    ),
                   ),
-                  child: const Text('Sign Up', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
-                const SizedBox(height: 32),
-                Text(
-                  'Your account is stored locally so your preferences and shelf are available every time you open the app.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
+                const SizedBox(height: 16),
+              ].animate(interval: 100.ms).fade(duration: 500.ms).slideY(begin: 0.1, end: 0, curve: Curves.easeOutQuad),
+            ),
+          ),
             ),
           ),
         ),

@@ -5,6 +5,9 @@ import '../models/user_preference.dart';
 import '../models/reader_settings.dart';
 import '../models/saved_quote.dart';
 import '../models/bookmark.dart';
+import '../models/highlight.dart';
+import '../models/custom_collection.dart';
+import '../models/review.dart';
 
 /// Minimal interface used by widgets/tests to interact with storage.
 abstract class ILocalStorageService {
@@ -101,6 +104,9 @@ class LocalStorageService implements ILocalStorageService {
       readerSettings: ReaderSettings(),
       savedQuotes: [],
       bookmarks: [],
+      highlights: [],
+      collections: [],
+      reviews: [],
     ));
     debugPrint('LocalStorageService.registerUser: registered $email');
     return user;
@@ -167,6 +173,9 @@ class LocalStorageService implements ILocalStorageService {
         readerSettings: ReaderSettings(),
         savedQuotes: [],
         bookmarks: [],
+        highlights: [],
+        collections: [],
+        reviews: [],
       );
       await savePreferences(defaultPreference);
       return defaultPreference;
@@ -242,5 +251,57 @@ class LocalStorageService implements ILocalStorageService {
     final bookmarks = List<Bookmark>.from(preference.bookmarks);
     bookmarks.removeWhere((b) => b.id == bookmarkId);
     await savePreferences(preference.copyWith(bookmarks: bookmarks));
+  }
+
+  Future<void> saveHighlight(String userId, Highlight highlight) async {
+    final preference = await getPreferences(userId);
+    final highlights = List<Highlight>.from(preference.highlights);
+    highlights.add(highlight);
+    await savePreferences(preference.copyWith(highlights: highlights));
+  }
+
+  Future<void> removeHighlight(String userId, String highlightId) async {
+    final preference = await getPreferences(userId);
+    final highlights = List<Highlight>.from(preference.highlights);
+    highlights.removeWhere((h) => h.id == highlightId);
+    await savePreferences(preference.copyWith(highlights: highlights));
+  }
+
+  Future<void> saveCollection(String userId, CustomCollection collection) async {
+    final preference = await getPreferences(userId);
+    final collections = List<CustomCollection>.from(preference.collections);
+    final index = collections.indexWhere((c) => c.id == collection.id);
+    if (index >= 0) {
+      collections[index] = collection;
+    } else {
+      collections.add(collection);
+    }
+    await savePreferences(preference.copyWith(collections: collections));
+  }
+
+  Future<void> removeCollection(String userId, String collectionId) async {
+    final preference = await getPreferences(userId);
+    final collections = List<CustomCollection>.from(preference.collections);
+    collections.removeWhere((c) => c.id == collectionId);
+    await savePreferences(preference.copyWith(collections: collections));
+  }
+
+  Future<void> saveReview(String userId, Review review) async {
+    final preference = await getPreferences(userId);
+    final reviews = List<Review>.from(preference.reviews);
+    final index = reviews.indexWhere((r) => r.bookId == review.bookId);
+    if (index >= 0) {
+      reviews[index] = review;
+    } else {
+      reviews.add(review);
+    }
+    await savePreferences(preference.copyWith(reviews: reviews));
+  }
+
+  Future<void> removeReview(String userId, String reviewId) async {
+    final preference = await getPreferences(userId);
+    final reviews = List<Review>.from(preference.reviews);
+    reviews.removeWhere((r) => r.id == reviewId);
+    await savePreferences(preference.copyWith(reviews: reviews));
   }
 }

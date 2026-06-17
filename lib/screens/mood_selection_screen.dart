@@ -3,6 +3,7 @@ import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 import '../widgets/mood_button.dart';
+import '../widgets/global_background.dart';
 
 class MoodSelectionScreen extends StatefulWidget {
   final ILocalStorageService? storage;
@@ -38,84 +39,78 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline_rounded, color: AppColors.textPrimary, size: 28),
-            onPressed: () => Navigator.of(context).pushNamed('/profile'),
-          ),
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(
-              icon: const Icon(Icons.logout_rounded, color: AppColors.textPrimary, size: 26),
-              onPressed: () async {
-                await LocalStorageService.instance.logout();
-                if (!context.mounted) return;
-                Navigator.of(context).pushReplacementNamed('/auth');
-              },
+              icon: const Icon(Icons.person_outline_rounded, color: AppColors.textPrimary, size: 28),
+              onPressed: () => Navigator.of(context).pushNamed('/profile'),
             ),
           ),
         ],
       ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(
-            vertical: AppConstants.paddingLarge,
-          ),
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingLarge),
-              child: Text(
-                'Welcome back, ${user?.name ?? 'Reader'}',
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-              ),
+      body: GlobalBackground(
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(
+              vertical: AppConstants.paddingLarge,
             ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingLarge),
-              child: Text(
-                'How are you feeling today?',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textSecondary,
-                      fontSize: 18,
-                    ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingLarge),
+                child: Text(
+                  'Welcome back, ${user?.name ?? 'Reader'}',
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
               ),
-            ),
-            const SizedBox(height: AppConstants.paddingXLarge),
-            ...List.generate(AppConstants.moods.length, (index) {
-              final mood = AppConstants.moods[index];
-              final description = AppConstants.moodDescriptions[mood] ?? '';
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingLarge),
+                child: Text(
+                  'How are you feeling today?',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontSize: 18,
+                      ),
+                ),
+              ),
+              const SizedBox(height: AppConstants.paddingXLarge),
+              ...List.generate(AppConstants.moods.length, (index) {
+                final mood = AppConstants.moods[index];
+                final description = AppConstants.moodDescriptions[mood] ?? '';
 
-              return Padding(
-                padding: const EdgeInsets.only(
-                  bottom: AppConstants.paddingMedium,
-                  left: AppConstants.paddingLarge,
-                  right: AppConstants.paddingLarge,
-                ),
-                child: MoodButton(
-                  mood: mood,
-                  label: description,
-                  isSelected: selectedMood == mood,
-                  onTap: () {
-                    setState(() {
-                      selectedMood = mood;
-                    });
-                    Future.delayed(AppConstants.shortDuration, () {
-                      if (!mounted) return;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (!mounted) return;
-                        Navigator.of(context).pushNamed(
-                          '/discovery',
-                          arguments: mood,
-                        );
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: AppConstants.paddingMedium,
+                    left: AppConstants.paddingLarge,
+                    right: AppConstants.paddingLarge,
+                  ),
+                  child: MoodButton(
+                    mood: mood,
+                    label: description,
+                    isSelected: selectedMood == mood,
+                    onTap: () {
+                      setState(() {
+                        selectedMood = mood;
                       });
-                    });
-                  },
-                ),
-              );
-            }),
-            const SizedBox(height: AppConstants.paddingXLarge), // Bottom padding
-          ],
+                      Future.delayed(AppConstants.shortDuration, () {
+                        if (!mounted) return;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          Navigator.of(context).pushNamed(
+                            '/discovery',
+                            arguments: mood,
+                          );
+                        });
+                      });
+                    },
+                  ),
+                );
+              }),
+              const SizedBox(height: AppConstants.paddingXLarge), // Bottom padding
+            ],
+          ),
         ),
       ),
     );

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'bouncing_button.dart';
+import 'glass_container.dart';
 
 class MoodButton extends StatelessWidget {
   final String mood;
@@ -21,25 +23,19 @@ class MoodButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final moodColor = AppColors.moodColors[mood] ?? AppColors.secondaryAccent;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedScale(
-        scale: isSelected ? 1.02 : 1.0,
+    return BouncingButton(
+      onPressed: onTap,
+      scaleFactor: 0.98,
+      child: AnimatedContainer(
         duration: AppConstants.shortDuration,
-        child: Container(
+        child: GlassContainer(
+          borderRadius: 32.0,
+          color: isSelected 
+              ? moodColor.withValues(alpha: 0.25) 
+              : AppColors.bgCardLight.withValues(alpha: 0.5),
           padding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 18,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(32.0),
-            color: isSelected ? moodColor.withValues(alpha: 0.15) : AppColors.bgCard,
-            border: Border.all(
-              color: isSelected 
-                  ? moodColor.withValues(alpha: 0.5) 
-                  : Colors.white.withValues(alpha: 0.6),
-              width: 1.5,
-            ),
           ),
           child: Row(
             children: [

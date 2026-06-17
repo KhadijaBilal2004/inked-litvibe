@@ -8,6 +8,8 @@ import '../models/saved_quote.dart';
 import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
+import '../widgets/global_background.dart';
+import '../widgets/bouncing_button.dart';
 
 class QuoteGalleryScreen extends StatefulWidget {
   const QuoteGalleryScreen({super.key});
@@ -110,7 +112,9 @@ class _QuoteGalleryScreenState extends State<QuoteGalleryScreen> {
         ),
         title: const Text('Quote Gallery', style: TextStyle(color: AppColors.textPrimary)),
       ),
-      body: _isLoading
+      body: GlobalBackground(
+        child: SafeArea(
+          child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _quotes.isEmpty
               ? const Center(
@@ -200,15 +204,21 @@ class _QuoteGalleryScreenState extends State<QuoteGalleryScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              TextButton.icon(
-                                icon: const Icon(Icons.download_rounded, color: AppColors.primaryAccent),
-                                label: const Text('Download', style: TextStyle(color: AppColors.primaryAccent)),
+                              BouncingButton(
                                 onPressed: () => _downloadQuote(quote),
+                                child: TextButton.icon(
+                                  icon: const Icon(Icons.download_rounded, color: AppColors.primaryAccent),
+                                  label: const Text('Download', style: TextStyle(color: AppColors.primaryAccent)),
+                                  onPressed: null,
+                                ),
                               ),
-                              TextButton.icon(
-                                icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
-                                label: const Text('Remove', style: TextStyle(color: AppColors.error)),
+                              BouncingButton(
                                 onPressed: () => _deleteQuote(quote.id),
+                                child: TextButton.icon(
+                                  icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
+                                  label: const Text('Remove', style: TextStyle(color: AppColors.error)),
+                                  onPressed: null,
+                                ),
                               ),
                             ],
                           ),
@@ -217,6 +227,8 @@ class _QuoteGalleryScreenState extends State<QuoteGalleryScreen> {
                     );
                   },
                 ),
+        ),
+      ),
     );
   }
 }

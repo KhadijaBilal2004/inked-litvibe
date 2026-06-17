@@ -11,6 +11,7 @@ class SwipeCard extends StatelessWidget {
   final bool showQuote;
   final String? currentQuote;
   final VoidCallback onRevealBook;
+  final VoidCallback? onLongPress;
 
   const SwipeCard({
     super.key,
@@ -18,17 +19,29 @@ class SwipeCard extends StatelessWidget {
     required this.showQuote,
     this.currentQuote,
     required this.onRevealBook,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onRevealBook,
-      child: Card(
-        color: AppColors.bgCard,
-        elevation: 12,
-        shape: RoundedRectangleBorder(
+      onLongPress: onLongPress,
+      child: Container(
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppConstants.radiusXLarge),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Container(
           decoration: BoxDecoration(
@@ -192,8 +205,11 @@ class SwipeCard extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [
                 Colors.transparent,
-                AppColors.bgCard.withValues(alpha: 0.95),
+                Colors.transparent,
+                AppColors.bgCard.withValues(alpha: 0.8),
+                AppColors.bgCard,
               ],
+              stops: const [0.0, 0.5, 0.8, 1.0],
             ),
           ),
         ),

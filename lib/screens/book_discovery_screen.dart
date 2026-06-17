@@ -7,6 +7,8 @@ import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 import '../widgets/swipe_card.dart';
 import '../services/quote_service.dart';
+import '../widgets/global_background.dart';
+import '../widgets/bouncing_button.dart';
 
 class BookDiscoveryScreen extends StatefulWidget {
   final String mood;
@@ -107,6 +109,56 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
     }
   }
 
+  Future<void> _showAddToShelfDialog(Book book) async {
+    final user = LocalStorageService.instance.currentUser;
+    if (user == null) return;
+    
+    final prefs = await LocalStorageService.instance.getPreferences(user.id);
+    final collections = prefs.collections;
+
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: AppColors.bgCard,
+          title: const Text('Add to Custom Shelf'),
+          content: collections.isEmpty
+              ? const Text('You have no custom shelves. Create one in your Profile!')
+              : SizedBox(
+                  width: double.maxFinite,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: collections.length,
+                    itemBuilder: (context, index) {
+                      final col = collections[index];
+                      return ListTile(
+                        title: Text(col.name),
+                        onTap: () async {
+                          if (!col.bookIds.contains(book.id)) {
+                            col.bookIds.add(book.id);
+                            await LocalStorageService.instance.saveCollection(user.id, col);
+                          }
+                          if (mounted) {
+                            Navigator.of(context).pop();
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Added to ${col.name}!')));
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,12 +168,13 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SafeArea(
-        child: isLoading
+      body: GlobalBackground(
+        child: SafeArea(
+          child: isLoading
             ? const Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
@@ -189,12 +242,13 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                             onSwipe: _onCardSwipe,
                             onEnd: _onEnd,
                             cardBuilder: (context, index, horizonalThresholdPercentage, verticalThresholdPercentage) {
-                              return SwipeCard(
-                                book: books[index],
-                                showQuote: !isRevealed || index != currentIndex,
-                                currentQuote: QuoteService.generateQuoteForBook(books[index]),
-                                onRevealBook: _revealBook,
-                              );
+                                return SwipeCard(
+                                  book: books[index],
+                                  showQuote: !isRevealed || index != currentIndex,
+                                  currentQuote: QuoteService.generateQuoteForBook(books[index]),
+                                  onRevealBook: _revealBook,
+                                  onLongPress: () => _showAddToShelfDialog(books[index]),
+                                );
                             },
                           ),
                         ),
@@ -202,25 +256,31 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            FloatingActionButton(
-                              heroTag: null,
+                            BouncingButton(
                               onPressed: () {
                                 _cardSwiperController.swipe(CardSwiperDirection.left);
                               },
-                              backgroundColor: AppColors.bgCard,
-                              elevation: 0,
-                              shape: CircleBorder(side: BorderSide(color: AppColors.textMuted.withValues(alpha: 0.3))),
-                              child: const Icon(Icons.close_rounded, color: AppColors.textSecondary, size: 32),
+                              child: FloatingActionButton(
+                                heroTag: null,
+                                onPressed: null,
+                                backgroundColor: AppColors.bgCard,
+                                elevation: 0,
+                                shape: CircleBorder(side: BorderSide(color: AppColors.textMuted.withValues(alpha: 0.3))),
+                                child: const Icon(Icons.close, color: AppColors.textSecondary, size: 32),
+                              ),
                             ),
-                            FloatingActionButton(
-                              heroTag: null,
+                            BouncingButton(
                               onPressed: () {
                                 _cardSwiperController.swipe(CardSwiperDirection.right);
                               },
-                              backgroundColor: AppColors.bgCard,
-                              elevation: 0,
-                              shape: CircleBorder(side: BorderSide(color: AppColors.primaryAccent.withValues(alpha: 0.5))),
-                              child: const Icon(Icons.bookmark_border_rounded, color: AppColors.primaryAccent, size: 32),
+                              child: FloatingActionButton(
+                                heroTag: null,
+                                onPressed: null,
+                                backgroundColor: AppColors.bgCard,
+                                elevation: 0,
+                                shape: CircleBorder(side: BorderSide(color: AppColors.primaryAccent.withValues(alpha: 0.5))),
+                                child: const Icon(Icons.favorite, color: AppColors.primaryAccent, size: 32),
+                              ),
                             ),
                           ],
                         ),
@@ -232,7 +292,8 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                       ],
                     ),
                   ),
-      ),
-    );
+            ),
+          ),
+        );
   }
 }

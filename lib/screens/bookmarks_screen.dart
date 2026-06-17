@@ -5,6 +5,8 @@ import '../services/book_service.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 import 'reader_screen.dart';
+import '../widgets/global_background.dart';
+import '../widgets/bouncing_button.dart';
 
 class BookmarksScreen extends StatefulWidget {
   const BookmarksScreen({super.key});
@@ -71,7 +73,9 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
         ),
         title: const Text('My Bookmarks', style: TextStyle(color: AppColors.textPrimary)),
       ),
-      body: _isLoading
+      body: GlobalBackground(
+        child: SafeArea(
+          child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _bookmarks.isEmpty
               ? const Center(
@@ -85,18 +89,24 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                   itemCount: _bookmarks.length,
                   itemBuilder: (context, index) {
                     final bookmark = _bookmarks[index];
-                    return GestureDetector(
-                      onTap: () => _openBookmark(bookmark),
+                    return BouncingButton(
+                      onPressed: () => _openBookmark(bookmark),
                       child: Container(
                         margin: const EdgeInsets.only(bottom: AppConstants.paddingMedium),
                         decoration: BoxDecoration(
                           color: AppColors.bgCard,
                           borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
+                          border: const Border(
+                            left: BorderSide(
+                              color: AppColors.primaryAccent,
+                              width: 6,
+                            ),
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 5,
-                              offset: const Offset(0, 2),
+                              color: Colors.black.withValues(alpha: 0.08),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
@@ -147,6 +157,8 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                     );
                   },
                 ),
+        ),
+      ),
     );
   }
 }

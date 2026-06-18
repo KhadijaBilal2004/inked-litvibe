@@ -128,17 +128,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 final book = books[index];
                 final hasImage = book.coverImageUrl.isNotEmpty;
                 
-                return BouncingButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ReaderScreen(book: book),
-                      ),
-                    ).then((_) => _loadShelf());
-                  },
-                  child: Container(
-                    width: 120,
-                    margin: const EdgeInsets.only(bottom: 8), // Shadow space
+                return GestureDetector(
+                  onLongPress: () => _showBookOptions(book, title),
+                  child: BouncingButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ReaderScreen(book: book),
+                        ),
+                      ).then((_) => _loadShelf());
+                    },
+                    child: Container(
+                      width: 120,
+                      margin: const EdgeInsets.only(bottom: 8), // Shadow space
                     decoration: BoxDecoration(
                       color: AppColors.bgCard,
                       borderRadius:
@@ -228,7 +230,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
-                ).animate(delay: Duration(milliseconds: 50 * index)).fade(duration: 300.ms).slideX(begin: 0.2, end: 0);
+                ),
+              ).animate(delay: Duration(milliseconds: 50 * index)).fade(duration: 300.ms).slideX(begin: 0.2, end: 0);
               },
             ),
           ),
@@ -472,9 +475,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Text('My Custom Shelves', style: Theme.of(context).textTheme.headlineSmall),
                         IconButton(
                           icon: const Icon(Icons.add_circle, color: AppColors.primaryAccent),
-                          onPressed: () {
-                            // TODO: Add create shelf dialog
-                          },
+                          onPressed: _showCreateShelfDialog,
                         ),
                       ],
                     ),
@@ -498,6 +499,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           tileColor: AppColors.bgCard,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          onTap: () => _showShelfDetailsDialog(col),
                         )).toList(),
                       ),
                       
@@ -627,6 +629,268 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textMuted), textAlign: TextAlign.center),
         ],
       ),
+    );
+  }
+
+  void _showCreateShelfDialog() {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: AppColors.bgCard,
+          title: const Text('Create New Custom Shelf'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              hintText: 'Enter shelf name (e.g. Classics, Sci-Fi)',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final name = controller.text.trim();
+                final user = LocalStorageService.instance.currentUser;
+                if (name.isNotEmpty && user != null) {
+                  final newCol = CustomCollection(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    name: name,
+                    bookIds: [],
+                  );
+                  await LocalStorageService.instance.saveCollection(user.id, newCol);
+                  await _loadShelf();
+                  if (mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Shelf "$name" created!')),
+                    );
+                  }
+                }
+              },
+              child: const Text('Create'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showShelfDetailsDialog(CustomCollection collection) async {
+    final user = LocalStorageService.instance.currentUser;
+    if (user == null) return;
+
+    // Load books in the collection
+    final books = await Future.wait(
+      collection.bookIds.map((id) => _bookService.getBookById(id)),
+    );
+    final shelfBooks = books.whereType<Book>().toList();
+
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: AppColors.bgCard,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(child: Text(collection.name)),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: AppColors.error),
+                    tooltip: 'Delete Shelf',
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Delete Shelf'),
+                          content: Text('Are you sure you want to delete the shelf "${collection.name}"?'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error, foregroundColor: Colors.white),
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirm == true && mounted) {
+                        await LocalStorageService.instance.removeCollection(user.id, collection.id);
+                        await _loadShelf();
+                        if (mounted) {
+                          Navigator.pop(context); // close details dialog
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Shelf "${collection.name}" deleted.')),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
+              content: shelfBooks.isEmpty
+                  ? const SizedBox(
+                      height: 100,
+                      child: Center(child: Text('No books on this shelf yet.')),
+                    )
+                  : SizedBox(
+                      width: double.maxFinite,
+                      height: 300,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: shelfBooks.length,
+                        itemBuilder: (context, index) {
+                          final book = shelfBooks[index];
+                          return ListTile(
+                            title: Text(book.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                            subtitle: Text(book.author, maxLines: 1, overflow: TextOverflow.ellipsis),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.menu_book, color: AppColors.primaryAccent),
+                                  tooltip: 'Read Book',
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (context) => ReaderScreen(book: book)),
+                                    ).then((_) => _loadShelf());
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.remove_circle_outline, color: AppColors.error),
+                                  tooltip: 'Remove from Shelf',
+                                  onPressed: () async {
+                                    collection.bookIds.remove(book.id);
+                                    await LocalStorageService.instance.saveCollection(user.id, collection);
+                                    await _loadShelf();
+                                    final updatedBooks = await Future.wait(
+                                      collection.bookIds.map((id) => _bookService.getBookById(id)),
+                                    );
+                                    setDialogState(() {
+                                      shelfBooks.clear();
+                                      shelfBooks.addAll(updatedBooks.whereType<Book>());
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          }
+        );
+      }
+    );
+  }
+
+  void _showBookOptions(Book book, String section) {
+    final user = LocalStorageService.instance.currentUser;
+    if (user == null) return;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.bgCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  book.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.menu_book, color: AppColors.primaryAccent),
+                title: const Text('Read Book'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => ReaderScreen(book: book)),
+                  ).then((_) => _loadShelf());
+                },
+              ),
+              if (section == 'To Read')
+                ListTile(
+                  leading: const Icon(Icons.remove_circle_outline, color: AppColors.error),
+                  title: const Text('Remove from To Read'),
+                  onTap: () async {
+                    final prefs = await LocalStorageService.instance.getPreferences(user.id);
+                    prefs.toReadBooks.remove(book.id);
+                    await LocalStorageService.instance.savePreferences(prefs);
+                    await _loadShelf();
+                    if (mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Removed "${book.title}" from To Read.')),
+                      );
+                    }
+                  },
+                ),
+              if (section == 'Favorites')
+                ListTile(
+                  leading: const Icon(Icons.favorite_border, color: AppColors.error),
+                  title: const Text('Remove from Favorites'),
+                  onTap: () async {
+                    final prefs = await LocalStorageService.instance.getPreferences(user.id);
+                    prefs.favoriteBooks.remove(book.id);
+                    await LocalStorageService.instance.savePreferences(prefs);
+                    await _loadShelf();
+                    if (mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Removed "${book.title}" from Favorites.')),
+                      );
+                    }
+                  },
+                ),
+              if (section == 'Read')
+                ListTile(
+                  leading: const Icon(Icons.remove_circle_outline, color: AppColors.error),
+                  title: const Text('Remove from Read'),
+                  onTap: () async {
+                    final prefs = await LocalStorageService.instance.getPreferences(user.id);
+                    prefs.readBooks.remove(book.id);
+                    await LocalStorageService.instance.savePreferences(prefs);
+                    await _loadShelf();
+                    if (mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Removed "${book.title}" from Read.')),
+                      );
+                    }
+                  },
+                ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        );
+      },
     );
   }
 }

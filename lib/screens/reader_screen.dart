@@ -30,6 +30,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   late PageController _pageController;
   ReaderSettings _settings = ReaderSettings();
   bool _isLoading = true;
+  bool _isFavorite = false;
   List<String> _pages = [];
   List<Chapter> _chapters = [];
   List<Highlight> _highlights = [];
@@ -115,6 +116,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
       
       if (mounted) {
         setState(() {
+          _isFavorite = prefs.favoriteBooks.contains(widget.book.id);
           _settings = prefs.readerSettings;
           _highlights = prefs.highlights.where((h) => h.bookId == widget.book.id).toList();
           _fullText = _normalizeText(fullText);
@@ -525,6 +527,30 @@ class _ReaderScreenState extends State<ReaderScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: _textColor),
         actions: [
+          IconButton(
+            icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border, color: _isFavorite ? AppColors.accentGold : null),
+            tooltip: _isFavorite ? 'Remove from Favorites' : 'Add to Favorites',
+            onPressed: () async {
+              final user = LocalStorageService.instance.currentUser;
+              if (user != null) {
+                final prefs = await LocalStorageService.instance.getPreferences(user.id);
+                setState(() {
+                  if (_isFavorite) {
+                    prefs.favoriteBooks.remove(widget.book.id);
+                  } else {
+                    prefs.favoriteBooks.add(widget.book.id);
+                  }
+                  _isFavorite = !_isFavorite;
+                });
+                await LocalStorageService.instance.savePreferences(prefs);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(_isFavorite ? 'Added to Favorites!' : 'Removed from Favorites!'),
+                  ));
+                }
+              }
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.bookmark_add_outlined),
             tooltip: 'Bookmark Page',

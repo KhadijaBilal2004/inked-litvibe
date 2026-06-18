@@ -25,6 +25,7 @@ class WelcomeScreen extends StatelessWidget {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.history_edu_rounded, color: AppColors.primaryAccent, size: 36),
                     const SizedBox(width: 12),

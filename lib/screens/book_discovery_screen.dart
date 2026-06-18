@@ -50,9 +50,32 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
   Future<void> _loadBooks() async {
     try {
       final loadedBooks = await _bookService.getBooksByMood(widget.mood);
+      
+      final storage = widget.storage ?? LocalStorageService.instance;
+      final user = storage.currentUser;
+      final Set<String> libraryBookIds = {};
+      
+      if (user != null) {
+        final prefs = await LocalStorageService.instance.getPreferences(user.id);
+        libraryBookIds.addAll(prefs.toReadBooks);
+        libraryBookIds.addAll(prefs.favoriteBooks);
+        libraryBookIds.addAll(prefs.readBooks);
+        for (var col in prefs.collections) {
+          libraryBookIds.addAll(col.bookIds);
+        }
+      }
+
+      final filteredBooks = loadedBooks.where((b) {
+        final isEnglish = b.language?.toLowerCase() == 'en';
+        final isNotInLibrary = !libraryBookIds.contains(b.id);
+        return isEnglish && isNotInLibrary;
+      }).toList();
+
+      filteredBooks.shuffle();
+
       if (!mounted) return;
       setState(() {
-        books = loadedBooks;
+        books = filteredBooks;
         isLoading = false;
       });
     } catch (e) {

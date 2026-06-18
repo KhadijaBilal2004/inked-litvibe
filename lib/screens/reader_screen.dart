@@ -307,24 +307,23 @@ class _ReaderScreenState extends State<ReaderScreen> {
                   // Font Family
                   Text('Font', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: AppConstants.paddingSmall),
-                  Row(
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 8.0,
                     children: ['Georgia', 'Arial', 'Courier'].map((font) {
                       final isSel = _settings.fontFamily == font;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: ChoiceChip(
-                          label: Text(font, style: TextStyle(fontFamily: font)),
-                          selected: isSel,
-                          selectedColor: AppColors.primaryAccent.withValues(alpha: 0.3),
-                          onSelected: (sel) {
-                            if (sel) {
-                              setModalState(() {
-                                _settings = _settings.copyWith(fontFamily: font);
-                              });
-                              _onFontFamilyChanged(font);
-                            }
-                          },
-                        ),
+                      return ChoiceChip(
+                        label: Text(font, style: TextStyle(fontFamily: font)),
+                        selected: isSel,
+                        selectedColor: AppColors.primaryAccent.withValues(alpha: 0.3),
+                        onSelected: (sel) {
+                          if (sel) {
+                            setModalState(() {
+                              _settings = _settings.copyWith(fontFamily: font);
+                            });
+                            _onFontFamilyChanged(font);
+                          }
+                        },
                       );
                     }).toList(),
                   ),
@@ -333,12 +332,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
                   // Theme
                   Text('Theme', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: AppConstants.paddingSmall),
-                  Row(
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 8.0,
                     children: [
                       _buildThemeBtn(setModalState, 'light', 'Light', Colors.white, Colors.black),
-                      const SizedBox(width: 8),
                       _buildThemeBtn(setModalState, 'sepia', 'Sepia', const Color(0xFFF4ECD8), const Color(0xFF5B4636)),
-                      const SizedBox(width: 8),
                       _buildThemeBtn(setModalState, 'dark', 'Dark', Colors.grey[900]!, Colors.white),
                     ],
                   ),

@@ -66,7 +66,8 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
       }
 
       final filteredBooks = loadedBooks.where((b) {
-        final isEnglish = b.language?.toLowerCase() == 'en';
+        final lang = b.language?.toLowerCase() ?? '';
+        final isEnglish = lang.isEmpty || lang == 'en' || lang == 'eng' || lang == 'english';
         final isNotInLibrary = !libraryBookIds.contains(b.id);
         return isEnglish && isNotInLibrary;
       }).toList();

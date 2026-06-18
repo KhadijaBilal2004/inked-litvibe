@@ -128,110 +128,159 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 final book = books[index];
                 final hasImage = book.coverImageUrl.isNotEmpty;
                 
-                return GestureDetector(
-                  onLongPress: () => _showBookOptions(book, title),
-                  child: BouncingButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ReaderScreen(book: book),
-                        ),
-                      ).then((_) => _loadShelf());
-                    },
-                    child: Container(
-                      width: 120,
-                      margin: const EdgeInsets.only(bottom: 8), // Shadow space
-                    decoration: BoxDecoration(
-                      color: AppColors.bgCard,
-                      borderRadius:
-                          BorderRadius.circular(AppConstants.radiusLarge),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(18)),
-                          child: Hero(
-                            tag: 'book_cover_${book.id}_$title',
-                            child: hasImage 
-                                ? CachedNetworkImage(
-                                    imageUrl: book.coverImageUrl,
-                                    height: 100,
-                                    width: 120,
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Container(
-                                      height: 100,
-                                      width: 120,
-                                      color: AppColors.bgCardDarker,
-                                      child: const Center(
-                                        child: CircularProgressIndicator(
-                                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondaryAccent),
-                                          strokeWidth: 2,
-                                        ),
-                                      ),
-                                    ),
-                                    errorWidget: (context, url, error) => Container(
-                                      height: 100,
-                                      width: 120,
-                                      color: AppColors.bgCardDarker,
-                                      child: const Icon(Icons.book,
-                                          color: AppColors.textMuted, size: 32),
-                                    ),
-                                  )
-                                : Container(
-                                  height: 100,
-                                  width: 120,
-                                  color: AppColors.bgCardDarker,
-                                  padding: const EdgeInsets.all(8),
-                                  child: Center(
-                                    child: Text(
-                                      book.title,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: AppColors.textPrimary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  ),
-                                ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10),
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    GestureDetector(
+                      child: BouncingButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ReaderScreen(book: book),
+                            ),
+                          ).then((_) => _loadShelf());
+                        },
+                        child: Container(
+                          width: 120,
+                          margin: const EdgeInsets.only(bottom: 8, right: 8), // Shadow space and Stack spacing
+                          decoration: BoxDecoration(
+                            color: AppColors.bgCard,
+                            borderRadius:
+                                BorderRadius.circular(AppConstants.radiusLarge),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                book.title,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleSmall,
+                              ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(18)),
+                                child: Hero(
+                                  tag: 'book_cover_${book.id}_$title',
+                                  child: hasImage 
+                                      ? CachedNetworkImage(
+                                          imageUrl: book.coverImageUrl,
+                                          height: 100,
+                                          width: 120,
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) => Container(
+                                            height: 100,
+                                            width: 120,
+                                            color: AppColors.bgCardDarker,
+                                            child: const Center(
+                                              child: CircularProgressIndicator(
+                                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondaryAccent),
+                                                strokeWidth: 2,
+                                              ),
+                                            ),
+                                          ),
+                                          errorWidget: (context, url, error) => Container(
+                                            height: 100,
+                                            width: 120,
+                                            color: AppColors.bgCardDarker,
+                                            child: const Icon(Icons.book,
+                                                color: AppColors.textMuted, size: 32),
+                                          ),
+                                        )
+                                      : Container(
+                                        height: 100,
+                                        width: 120,
+                                        color: AppColors.bgCardDarker,
+                                        padding: const EdgeInsets.all(8),
+                                        child: Center(
+                                          child: Text(
+                                            book.title,
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                              color: AppColors.textPrimary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        ),
+                                      ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                book.author,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall,
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      book.title,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context).textTheme.titleSmall,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      book.author,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              ).animate(delay: Duration(milliseconds: 50 * index)).fade(duration: 300.ms).slideX(begin: 0.2, end: 0);
+                    if (title != 'All Added Books')
+                      Positioned(
+                        top: -4,
+                        right: 4,
+                        child: GestureDetector(
+                          onTap: () async {
+                            final user = LocalStorageService.instance.currentUser;
+                            if (user == null) return;
+                            final prefs = await LocalStorageService.instance.getPreferences(user.id);
+                            if (title == 'To Read') {
+                              prefs.toReadBooks.remove(book.id);
+                            } else if (title == 'Favorites') {
+                              prefs.favoriteBooks.remove(book.id);
+                            } else if (title == 'Read') {
+                              prefs.readBooks.remove(book.id);
+                            }
+                            await LocalStorageService.instance.savePreferences(prefs);
+                            await _loadShelf();
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text('Removed "${book.title}" from $title.'),
+                              ));
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.error.withValues(alpha: 0.9),
+                              shape: BoxShape.circle,
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(4),
+                            child: const Icon(
+                              Icons.close,
+                              size: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ).animate(delay: Duration(milliseconds: 50 * index)).fade(duration: 300.ms).slideX(begin: 0.2, end: 0);
               },
             ),
           ),
@@ -799,98 +848,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showBookOptions(Book book, String section) {
-    final user = LocalStorageService.instance.currentUser;
-    if (user == null) return;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.bgCard,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  book.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.menu_book, color: AppColors.primaryAccent),
-                title: const Text('Read Book'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ReaderScreen(book: book)),
-                  ).then((_) => _loadShelf());
-                },
-              ),
-              if (section == 'To Read')
-                ListTile(
-                  leading: const Icon(Icons.remove_circle_outline, color: AppColors.error),
-                  title: const Text('Remove from To Read'),
-                  onTap: () async {
-                    final prefs = await LocalStorageService.instance.getPreferences(user.id);
-                    prefs.toReadBooks.remove(book.id);
-                    await LocalStorageService.instance.savePreferences(prefs);
-                    await _loadShelf();
-                    if (mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Removed "${book.title}" from To Read.')),
-                      );
-                    }
-                  },
-                ),
-              if (section == 'Favorites')
-                ListTile(
-                  leading: const Icon(Icons.favorite_border, color: AppColors.error),
-                  title: const Text('Remove from Favorites'),
-                  onTap: () async {
-                    final prefs = await LocalStorageService.instance.getPreferences(user.id);
-                    prefs.favoriteBooks.remove(book.id);
-                    await LocalStorageService.instance.savePreferences(prefs);
-                    await _loadShelf();
-                    if (mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Removed "${book.title}" from Favorites.')),
-                      );
-                    }
-                  },
-                ),
-              if (section == 'Read')
-                ListTile(
-                  leading: const Icon(Icons.remove_circle_outline, color: AppColors.error),
-                  title: const Text('Remove from Read'),
-                  onTap: () async {
-                    final prefs = await LocalStorageService.instance.getPreferences(user.id);
-                    prefs.readBooks.remove(book.id);
-                    await LocalStorageService.instance.savePreferences(prefs);
-                    await _loadShelf();
-                    if (mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Removed "${book.title}" from Read.')),
-                      );
-                    }
-                  },
-                ),
-              const SizedBox(height: 12),
-            ],
-          ),
-        );
-      },
-    );
-  }
 }

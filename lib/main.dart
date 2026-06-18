@@ -11,9 +11,11 @@ import 'services/local_storage_service.dart';
 import 'theme/app_theme.dart';
 import 'utils/constants.dart';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isWindows || Platform.isLinux) {
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }

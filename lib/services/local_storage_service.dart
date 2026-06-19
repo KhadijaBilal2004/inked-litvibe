@@ -16,6 +16,23 @@ abstract class ILocalStorageService {
   Future<User> loginUser(String email, String password);
   Future<void> logout();
   Future<void> close();
+  Future<UserPreference> getPreferences(String userId);
+  Future<void> savePreferences(UserPreference preference);
+  Future<void> addToRead(String userId, String bookId);
+  Future<void> addToFavorites(String userId, String bookId);
+  Future<void> markAsRead(String userId, String bookId);
+  Future<void> saveReadingProgress(String userId, String bookId, double offset);
+  Future<void> saveReaderSettings(String userId, ReaderSettings settings);
+  Future<void> saveQuote(String userId, SavedQuote quote);
+  Future<void> removeQuote(String userId, String quoteId);
+  Future<void> saveBookmark(String userId, Bookmark bookmark);
+  Future<void> removeBookmark(String userId, String bookmarkId);
+  Future<void> saveHighlight(String userId, Highlight highlight);
+  Future<void> removeHighlight(String userId, String highlightId);
+  Future<void> saveCollection(String userId, CustomCollection collection);
+  Future<void> removeCollection(String userId, String collectionId);
+  Future<void> saveReview(String userId, Review review);
+  Future<void> removeReview(String userId, String reviewId);
 }
 
 class LocalStorageService implements ILocalStorageService {

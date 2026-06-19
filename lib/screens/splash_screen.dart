@@ -10,11 +10,28 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  bool _hasNavigated = false;
+
+  void _navigateToNext() {
+    debugPrint('SplashScreen: _navigateToNext called. _hasNavigated=$_hasNavigated, mounted=$mounted');
+    if (_hasNavigated || !mounted) return;
+    _hasNavigated = true;
+    
+    final user = LocalStorageService.instance.currentUser;
+    final nextRoute = user != null ? '/mood-selection' : '/welcome';
+    debugPrint('SplashScreen: currentUser=${user?.email}, nextRoute=$nextRoute');
+
+    try {
+      Navigator.of(context).pushReplacementNamed(nextRoute);
+      debugPrint('SplashScreen: Navigation succeeded to $nextRoute');
+    } catch (e, stack) {
+      debugPrint('SplashScreen: Navigation threw exception: $e\n$stack');
+    }
+  }
 
   @override
   void initState() {
@@ -35,15 +52,7 @@ class _SplashScreenState extends State<SplashScreen>
     _animationController.forward();
 
     Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      
-      final user = LocalStorageService.instance.currentUser;
-      final nextRoute = user != null ? '/mood-selection' : '/welcome';
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        Navigator.of(context).pushReplacementNamed(nextRoute);
-      });
+      _navigateToNext();
     });
   }
 
@@ -57,7 +66,10 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgDark,
-      body: Center(
+      body: GestureDetector(
+        onDoubleTap: _navigateToNext,
+        behavior: HitTestBehavior.opaque,
+        child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -109,18 +121,12 @@ class _SplashScreenState extends State<SplashScreen>
                           fontWeight: FontWeight.bold,
                         ),
                   ),
-                  const SizedBox(height: AppConstants.paddingSmall),
-                  Text(
-                    'Mood-Based Book Discovery',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColors.primaryLight,
-                        ),
-                  ),
                 ],
               ),
             ),
           ],
         ),
+      ),
       ),
     );
   }

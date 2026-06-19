@@ -1,10 +1,10 @@
-import 'dart:io' show File, FileSystemEntity, FileSystemEntityType, Directory;
-import 'dart:typed_data';
+import 'dart:io' show File, Directory;
+import 'dart:typed_data' show ByteData;
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../models/book.dart';
 
@@ -25,16 +25,40 @@ class SqliteService {
       throw UnsupportedError('SQLite is not supported on web.');
     }
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "app_books_v7.db");
+    String path = join(documentsDirectory.path, "app_books_v10.db");
 
-    // Only copy if the database doesn't exist
-    if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {
+    final File dbFile = File(path);
+    
+    // Only copy if the database doesn't exist or is empty/corrupt (less than 10MB)
+    if (!dbFile.existsSync() || dbFile.lengthSync() < 10 * 1024 * 1024) {
+      if (dbFile.existsSync()) {
+        try {
+          await dbFile.delete();
+        } catch (e) {
+          debugPrint('Error deleting corrupt database: $e');
+        }
+      }
+
       // Load database from asset and copy using forward slashes as required by rootBundle
       ByteData data = await rootBundle.load("assets/db/app_books.db");
       List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
       // Save copied asset to documents
-      await File(path).writeAsBytes(bytes);
+      await dbFile.writeAsBytes(bytes);
+    }
+
+    // Clean up older database versions to free up space
+    try {
+      final List<String> oldVersions = ['app_books_v9.db', 'app_books_v8.db', 'app_books_v7.db', 'app_books_v6.db', 'app_books.db'];
+      for (final oldDb in oldVersions) {
+        final oldPath = join(documentsDirectory.path, oldDb);
+        final oldFile = File(oldPath);
+        if (oldFile.existsSync()) {
+          await oldFile.delete();
+        }
+      }
+    } catch (e) {
+      debugPrint('Error cleaning old databases: $e');
     }
 
     // Open the database

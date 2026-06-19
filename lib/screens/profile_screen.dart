@@ -25,6 +25,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  ILocalStorageService get _storage => widget.storage ?? LocalStorageService.instance;
   final BookService _bookService = BookService();
   bool _isLoading = true;
   List<Book> _toReadBooks = [];
@@ -46,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadShelf() async {
-    final user = LocalStorageService.instance.currentUser;
+    final user = _storage.currentUser;
     if (user == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
@@ -56,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     final preference =
-        await LocalStorageService.instance.getPreferences(user.id);
+        await _storage.getPreferences(user.id);
     final toRead = await Future.wait(
         preference.toReadBooks.map((id) => _bookService.getBookById(id)));
     final read = await Future.wait(
@@ -136,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => ReaderScreen(book: book),
+                              builder: (context) => ReaderScreen(book: book, storage: _storage),
                             ),
                           ).then((_) => _loadShelf());
                         },
@@ -240,9 +241,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         right: 4,
                         child: GestureDetector(
                           onTap: () async {
-                            final user = LocalStorageService.instance.currentUser;
+                            final user = _storage.currentUser;
                             if (user == null) return;
-                            final prefs = await LocalStorageService.instance.getPreferences(user.id);
+                            final prefs = await _storage.getPreferences(user.id);
                             if (title == 'To Read') {
                               prefs.toReadBooks.remove(book.id);
                             } else if (title == 'Favorites') {
@@ -250,7 +251,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             } else if (title == 'Read') {
                               prefs.readBooks.remove(book.id);
                             }
-                            await LocalStorageService.instance.savePreferences(prefs);
+                            await _storage.savePreferences(prefs);
                             await _loadShelf();
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -290,7 +291,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = LocalStorageService.instance.currentUser;
+    final user = _storage.currentUser;
 
     return Scaffold(
       backgroundColor: AppColors.bgLight,
@@ -314,308 +315,313 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: GlobalBackground(
         child: SafeArea(
-          child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppConstants.paddingLarge),
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GlassContainer(
-                      padding: const EdgeInsets.all(18),
-                      child: Row(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 650),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppConstants.paddingLarge),
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primaryAccent.withValues(alpha: 0.4),
-                                  blurRadius: 15,
-                                  spreadRadius: 2,
+                          GlassContainer(
+                            padding: const EdgeInsets.all(18),
+                            child: Row(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.primaryAccent.withValues(alpha: 0.4),
+                                        blurRadius: 15,
+                                        spreadRadius: 2,
+                                      ),
+                                    ],
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 36,
+                                    backgroundColor: AppColors.primaryAccent,
+                                    child: Text(
+                                      (user?.name.isNotEmpty ?? false)
+                                          ? user!.name[0].toUpperCase()
+                                          : 'R',
+                                      style: const TextStyle(
+                                          color: AppColors.primaryLight,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        user?.name ?? 'Reader',
+                                        style: Theme.of(context)
+                                            .textTheme.displaySmall,
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        user?.email ?? 'No email',
+                                        style:
+                                            Theme.of(context).textTheme.bodySmall,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: [
+                                          _smallStat(
+                                              '${_toReadBooks.length}', 'TBR'),
+                                          _smallStat('${_favoriteBooks.length}',
+                                              'Favorites'),
+                                          _smallStat(
+                                              '${_readBooks.length}', 'Read'),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                            child: CircleAvatar(
-                              radius: 36,
-                              backgroundColor: AppColors.primaryAccent,
-                              child: Text(
-                                (user?.name.isNotEmpty ?? false)
-                                    ? user!.name[0].toUpperCase()
-                                    : 'R',
-                                style: const TextStyle(
-                                    color: AppColors.primaryLight,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                            ),
                           ),
-                          const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    user?.name ?? 'Reader',
-                                    style: Theme.of(context)
-                                        .textTheme.displaySmall,
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    user?.email ?? 'No email',
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: [
-                                      _smallStat(
-                                          '${_toReadBooks.length}', 'TBR'),
-                                      _smallStat('${_favoriteBooks.length}',
-                                          'Favorites'),
-                                      _smallStat(
-                                          '${_readBooks.length}', 'Read'),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    const SizedBox(height: 24),
-                    
-                    // Reading Stats Dashboard
-                    Text('Reading Stats', style: Theme.of(context).textTheme.headlineSmall),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(child: _buildStatCard('Total Books', '$_totalBooksRead', Icons.library_books)),
-                        const SizedBox(width: 12),
-                        Expanded(child: _buildStatCard('Pages Read', '$_estimatedPagesRead', Icons.auto_stories)),
-                        const SizedBox(width: 12),
-                        Expanded(child: _buildStatCard('Top Vibe', _favoriteGenre, Icons.mood)),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Navigation buttons to sections
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () => _scrollTo(_toReadKey),
-                            icon: const Icon(Icons.bookmark_border),
-                            label: const Text('My TBR', style: TextStyle(fontWeight: FontWeight.bold)),
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: const StadiumBorder(),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () => _scrollTo(_favKey),
-                            icon: const Icon(Icons.favorite_border),
-                            label: const Text('Favorites', style: TextStyle(fontWeight: FontWeight.bold)),
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: const StadiumBorder(),
-                              backgroundColor: AppColors.accentGold,
-                              foregroundColor: AppColors.primaryLight,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () => _scrollTo(_readKey),
-                            icon: const Icon(Icons.book),
-                            label: const Text('Read', style: TextStyle(fontWeight: FontWeight.bold)),
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: const StadiumBorder(),
-                              backgroundColor: AppColors.primaryAccent,
-                              foregroundColor: AppColors.primaryLight,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => const QuoteGalleryScreen()),
-                              );
-                            },
-                            icon: const Icon(Icons.format_quote_rounded),
-                            label: const Text('Quotes', style: TextStyle(fontWeight: FontWeight.bold)),
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: const StadiumBorder(),
-                              backgroundColor: AppColors.secondaryAccent,
-                              foregroundColor: AppColors.primaryLight,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => const BookmarksScreen()),
-                              );
-                            },
-                            icon: const Icon(Icons.bookmark_rounded),
-                            label: const Text('Bookmarks', style: TextStyle(fontWeight: FontWeight.bold)),
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: const StadiumBorder(),
-                              backgroundColor: AppColors.accentGold,
-                              foregroundColor: AppColors.primaryLight,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Explanatory line
-                    Text(
-                      'Your shelf — any book you add in Discovery will appear below in the appropriate section.',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 18),
-
-                    // Sections with keys for scroll targeting
-                    Container(
-                        key: _toReadKey,
-                        child: _buildSection('To Read', _toReadBooks)),
-                    const SizedBox(height: 24),
-                    Container(
-                        key: _readKey,
-                        child: _buildSection('Read', _readBooks)),
-                    const SizedBox(height: 24),
-                    Container(
-                        key: _favKey,
-                        child: _buildSection('Favorites', _favoriteBooks)),
-                    const SizedBox(height: 24),
-                    _buildSection('All Added Books', _combinedShelf()),
-                    const SizedBox(height: 32),
-                    
-                    // My Shelves Section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('My Custom Shelves', style: Theme.of(context).textTheme.headlineSmall),
-                        IconButton(
-                          icon: const Icon(Icons.add_circle, color: AppColors.primaryAccent),
-                          onPressed: _showCreateShelfDialog,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    if (_collections.isEmpty)
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: AppColors.bgCard,
-                          borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
-                        ),
-                        child: Text('No custom shelves yet.', style: Theme.of(context).textTheme.bodyMedium),
-                      )
-                    else
-                      Column(
-                        children: _collections.map((col) => ListTile(
-                          title: Text(col.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text('${col.bookIds.length} books'),
-                          leading: const Icon(Icons.shelves, color: AppColors.primaryAccent),
-                          tileColor: AppColors.bgCard,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          onTap: () => _showShelfDetailsDialog(col),
-                        )).toList(),
-                      ),
-                      
-                    const SizedBox(height: 32),
-                    // My Reviews Section
-                    Text('My Reviews', style: Theme.of(context).textTheme.headlineSmall),
-                    const SizedBox(height: 12),
-                    if (_reviews.isEmpty)
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: AppColors.bgCard,
-                          borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
-                        ),
-                        child: Text('You haven\'t reviewed any books yet.', style: Theme.of(context).textTheme.bodyMedium),
-                      )
-                    else
-                      Column(
-                        children: _reviews.map((rev) => Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppColors.bgCard,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          const SizedBox(height: 24),
+                          
+                          // Reading Stats Dashboard
+                          Text('Reading Stats', style: Theme.of(context).textTheme.headlineSmall),
+                          const SizedBox(height: 12),
+                          Row(
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(child: Text(rev.bookTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
-                                  Row(children: List.generate(5, (i) => Icon(Icons.star, size: 16, color: i < rev.rating ? AppColors.accentGold : Colors.grey))),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(rev.text, style: const TextStyle(height: 1.5)),
+                              Expanded(child: _buildStatCard('Total Books', '$_totalBooksRead', Icons.library_books)),
+                              const SizedBox(width: 12),
+                              Expanded(child: _buildStatCard('Pages Read', '$_estimatedPagesRead', Icons.auto_stories)),
+                              const SizedBox(width: 12),
+                              Expanded(child: _buildStatCard('Top Vibe', _favoriteGenre, Icons.mood)),
                             ],
                           ),
-                        )).toList(),
+                          const SizedBox(height: 24),
+
+                          // Navigation buttons to sections
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () => _scrollTo(_toReadKey),
+                                  icon: const Icon(Icons.bookmark_border),
+                                  label: const Text('My TBR', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    shape: const StadiumBorder(),
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () => _scrollTo(_favKey),
+                                  icon: const Icon(Icons.favorite_border),
+                                  label: const Text('Favorites', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    shape: const StadiumBorder(),
+                                    backgroundColor: AppColors.accentGold,
+                                    foregroundColor: AppColors.primaryLight,
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () => _scrollTo(_readKey),
+                                  icon: const Icon(Icons.book),
+                                  label: const Text('Read', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    shape: const StadiumBorder(),
+                                    backgroundColor: AppColors.primaryAccent,
+                                    foregroundColor: AppColors.primaryLight,
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (context) => const QuoteGalleryScreen()),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.format_quote_rounded),
+                                  label: const Text('Quotes', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    shape: const StadiumBorder(),
+                                    backgroundColor: AppColors.secondaryAccent,
+                                    foregroundColor: AppColors.primaryLight,
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (context) => const BookmarksScreen()),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.bookmark_rounded),
+                                  label: const Text('Bookmarks', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    shape: const StadiumBorder(),
+                                    backgroundColor: AppColors.accentGold,
+                                    foregroundColor: AppColors.primaryLight,
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Explanatory line
+                          Text(
+                            'Your shelf — any book you add in Discovery will appear below in the appropriate section.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const SizedBox(height: 18),
+
+                          // Sections with keys for scroll targeting
+                          Container(
+                              key: _toReadKey,
+                              child: _buildSection('To Read', _toReadBooks)),
+                          const SizedBox(height: 24),
+                          Container(
+                              key: _readKey,
+                              child: _buildSection('Read', _readBooks)),
+                          const SizedBox(height: 24),
+                          Container(
+                              key: _favKey,
+                              child: _buildSection('Favorites', _favoriteBooks)),
+                          const SizedBox(height: 24),
+                          _buildSection('All Added Books', _combinedShelf()),
+                          const SizedBox(height: 32),
+                          
+                          // My Shelves Section
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('My Custom Shelves', style: Theme.of(context).textTheme.headlineSmall),
+                              IconButton(
+                                icon: const Icon(Icons.add_circle, color: AppColors.primaryAccent),
+                                onPressed: _showCreateShelfDialog,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          if (_collections.isEmpty)
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: AppColors.bgCard,
+                                borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
+                              ),
+                              child: Text('No custom shelves yet.', style: Theme.of(context).textTheme.bodyMedium),
+                            )
+                          else
+                            Column(
+                              children: _collections.map((col) => ListTile(
+                                title: Text(col.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                subtitle: Text('${col.bookIds.length} books'),
+                                leading: const Icon(Icons.shelves, color: AppColors.primaryAccent),
+                                tileColor: AppColors.bgCard,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                onTap: () => _showShelfDetailsDialog(col),
+                              )).toList(),
+                            ),
+                            
+                          const SizedBox(height: 32),
+                          // My Reviews Section
+                          Text('My Reviews', style: Theme.of(context).textTheme.headlineSmall),
+                          const SizedBox(height: 12),
+                          if (_reviews.isEmpty)
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: AppColors.bgCard,
+                                borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
+                              ),
+                              child: Text('You haven\'t reviewed any books yet.', style: Theme.of(context).textTheme.bodyMedium),
+                            )
+                          else
+                            Column(
+                              children: _reviews.map((rev) => Container(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: AppColors.bgCard,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(child: Text(rev.bookTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+                                        Row(children: List.generate(5, (i) => Icon(Icons.star, size: 16, color: i < rev.rating ? AppColors.accentGold : Colors.grey))),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(rev.text, style: const TextStyle(height: 1.5)),
+                                  ],
+                                ),
+                              )).toList(),
+                            ),
+                            
+                          const SizedBox(height: 48),
+                          // Logout Option
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                await _storage.logout();
+                                if (!context.mounted) return;
+                                Navigator.of(context).pushReplacementNamed('/auth');
+                              },
+                              icon: const Icon(Icons.logout),
+                              label: const Text('Log Out', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.error.withValues(alpha: 0.1),
+                                foregroundColor: AppColors.error,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                        ],
                       ),
-                      
-                    const SizedBox(height: 48),
-                    // Logout Option
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                          await LocalStorageService.instance.logout();
-                          if (!context.mounted) return;
-                          Navigator.of(context).pushReplacementNamed('/auth');
-                        },
-                        icon: const Icon(Icons.logout),
-                        label: const Text('Log Out', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.error.withValues(alpha: 0.1),
-                          foregroundColor: AppColors.error,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                  ],
-                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -673,7 +679,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Icon(icon, color: AppColors.primaryAccent, size: 28),
           const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
           const SizedBox(height: 4),
           Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textMuted), textAlign: TextAlign.center),
         ],
@@ -704,14 +720,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ElevatedButton(
               onPressed: () async {
                 final name = controller.text.trim();
-                final user = LocalStorageService.instance.currentUser;
+                final user = _storage.currentUser;
                 if (name.isNotEmpty && user != null) {
                   final newCol = CustomCollection(
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
                     name: name,
                     bookIds: [],
                   );
-                  await LocalStorageService.instance.saveCollection(user.id, newCol);
+                  await _storage.saveCollection(user.id, newCol);
                   await _loadShelf();
                   if (mounted) {
                     Navigator.pop(context);
@@ -730,7 +746,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _showShelfDetailsDialog(CustomCollection collection) async {
-    final user = LocalStorageService.instance.currentUser;
+    final user = _storage.currentUser;
     if (user == null) return;
 
     // Load books in the collection
@@ -771,7 +787,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       );
                       if (confirm == true && mounted) {
-                        await LocalStorageService.instance.removeCollection(user.id, collection.id);
+                        await _storage.removeCollection(user.id, collection.id);
                         await _loadShelf();
                         if (mounted) {
                           Navigator.pop(context); // close details dialog
@@ -809,7 +825,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   onPressed: () {
                                     Navigator.pop(context);
                                     Navigator.of(context).push(
-                                      MaterialPageRoute(builder: (context) => ReaderScreen(book: book)),
+                                      MaterialPageRoute(builder: (context) => ReaderScreen(book: book, storage: _storage)),
                                     ).then((_) => _loadShelf());
                                   },
                                 ),
@@ -818,7 +834,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   tooltip: 'Remove from Shelf',
                                   onPressed: () async {
                                     collection.bookIds.remove(book.id);
-                                    await LocalStorageService.instance.saveCollection(user.id, collection);
+                                    await _storage.saveCollection(user.id, collection);
                                     await _loadShelf();
                                     final updatedBooks = await Future.wait(
                                       collection.bookIds.map((id) => _bookService.getBookById(id)),

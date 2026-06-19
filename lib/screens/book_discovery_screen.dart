@@ -25,6 +25,7 @@ class BookDiscoveryScreen extends StatefulWidget {
 }
 
 class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
+  ILocalStorageService get _storage => widget.storage ?? LocalStorageService.instance;
   late BookService _bookService;
   late CardSwiperController _cardSwiperController;
   List<Book> books = [];
@@ -51,12 +52,11 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
     try {
       final loadedBooks = await _bookService.getBooksByMood(widget.mood);
       
-      final storage = widget.storage ?? LocalStorageService.instance;
-      final user = storage.currentUser;
+      final user = _storage.currentUser;
       final Set<String> libraryBookIds = {};
       
       if (user != null) {
-        final prefs = await LocalStorageService.instance.getPreferences(user.id);
+        final prefs = await _storage.getPreferences(user.id);
         libraryBookIds.addAll(prefs.toReadBooks);
         libraryBookIds.addAll(prefs.favoriteBooks);
         libraryBookIds.addAll(prefs.readBooks);
@@ -92,17 +92,13 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
   }
 
   void _handleSwipe(Book book, CardSwiperDirection direction) {
-    final storage = widget.storage ?? LocalStorageService.instance as ILocalStorageService;
-    final user = (storage as dynamic).currentUser as dynamic; // access currentUser if available
+    final user = _storage.currentUser;
     if (direction == CardSwiperDirection.right && user != null) {
       try {
-        (storage as dynamic).addToRead(user.id, book.id);
+        _storage.addToRead(user.id, book.id);
       } catch (e) {
         debugPrint('Could not save to-read book: $e');
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Added "${book.title}" to your To Read list.')),
-      );
     }
   }
 
@@ -134,10 +130,10 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
   }
 
   Future<void> _showAddToShelfDialog(Book book) async {
-    final user = LocalStorageService.instance.currentUser;
+    final user = _storage.currentUser;
     if (user == null) return;
     
-    final prefs = await LocalStorageService.instance.getPreferences(user.id);
+    final prefs = await _storage.getPreferences(user.id);
     final collections = prefs.collections;
 
     if (!mounted) return;
@@ -161,7 +157,7 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                         onTap: () async {
                           if (!col.bookIds.contains(book.id)) {
                             col.bookIds.add(book.id);
-                            await LocalStorageService.instance.saveCollection(user.id, col);
+                            await _storage.saveCollection(user.id, col);
                           }
                           if (mounted) {
                             Navigator.of(context).pop();
@@ -260,20 +256,28 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                     child: Column(
                       children: [
                         Expanded(
-                          child: CardSwiper(
-                            controller: _cardSwiperController,
-                            cardsCount: books.length,
-                            onSwipe: _onCardSwipe,
-                            onEnd: _onEnd,
-                            cardBuilder: (context, index, horizonalThresholdPercentage, verticalThresholdPercentage) {
-                                return SwipeCard(
-                                  book: books[index],
-                                  showQuote: !isRevealed || index != currentIndex,
-                                  currentQuote: QuoteService.generateQuoteForBook(books[index]),
-                                  onRevealBook: _revealBook,
-                                  onLongPress: () => _showAddToShelfDialog(books[index]),
-                                );
-                            },
+                          child: Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: 400,
+                                maxHeight: 600,
+                              ),
+                              child: CardSwiper(
+                                controller: _cardSwiperController,
+                                cardsCount: books.length,
+                                onSwipe: _onCardSwipe,
+                                onEnd: _onEnd,
+                                cardBuilder: (context, index, horizonalThresholdPercentage, verticalThresholdPercentage) {
+                                    return SwipeCard(
+                                      book: books[index],
+                                      showQuote: !isRevealed || index != currentIndex,
+                                      currentQuote: QuoteService.generateQuoteForBook(books[index]),
+                                      onRevealBook: _revealBook,
+                                      onLongPress: () => _showAddToShelfDialog(books[index]),
+                                    );
+                                },
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(height: AppConstants.paddingLarge),

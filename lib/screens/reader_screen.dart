@@ -18,14 +18,16 @@ import '../models/review.dart';
 
 class ReaderScreen extends StatefulWidget {
   final Book book;
+  final ILocalStorageService? storage;
 
-  const ReaderScreen({super.key, required this.book});
+  const ReaderScreen({super.key, required this.book, this.storage});
 
   @override
   State<ReaderScreen> createState() => _ReaderScreenState();
 }
 
 class _ReaderScreenState extends State<ReaderScreen> {
+  ILocalStorageService get _storage => widget.storage ?? LocalStorageService.instance;
   late ScrollController _scrollController;
   late PageController _pageController;
   ReaderSettings _settings = ReaderSettings();
@@ -99,9 +101,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   Future<void> _loadInitialData() async {
-    final user = LocalStorageService.instance.currentUser;
+    final user = _storage.currentUser;
     if (user != null) {
-      final prefs = await LocalStorageService.instance.getPreferences(user.id);
+      final prefs = await _storage.getPreferences(user.id);
       final offset = prefs.readingProgress[widget.book.id] ?? 0.0;
       
       String fullText = widget.book.fullText ?? '';
@@ -176,7 +178,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   Future<void> _saveProgress() async {
-    final user = LocalStorageService.instance.currentUser;
+    final user = _storage.currentUser;
     if (user != null) {
       double offset = 0;
       double progress = 0;
@@ -193,10 +195,10 @@ class _ReaderScreenState extends State<ReaderScreen> {
       }
 
       if (progress >= 99.0) {
-        await LocalStorageService.instance.markAsRead(user.id, widget.book.id);
+        await _storage.markAsRead(user.id, widget.book.id);
       }
 
-      await LocalStorageService.instance.saveReadingProgress(
+      await _storage.saveReadingProgress(
         user.id,
         widget.book.id,
         offset,
@@ -503,10 +505,142 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   void _persistSettings() {
-    final user = LocalStorageService.instance.currentUser;
+    final user = _storage.currentUser;
     if (user != null) {
-      LocalStorageService.instance.saveReaderSettings(user.id, _settings);
+      _storage.saveReaderSettings(user.id, _settings);
     }
+  }
+
+  Future<void> _showManageCollectionsDialog() async {
+    final user = _storage.currentUser;
+    if (user == null) return;
+
+    final prefs = await _storage.getPreferences(user.id);
+    final collections = prefs.collections;
+
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final inToRead = prefs.toReadBooks.contains(widget.book.id);
+            final inRead = prefs.readBooks.contains(widget.book.id);
+            final inFavorites = prefs.favoriteBooks.contains(widget.book.id);
+
+            return GlassContainer(
+              margin: const EdgeInsets.all(8.0),
+              borderRadius: 24,
+              padding: const EdgeInsets.all(AppConstants.paddingLarge),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 48,
+                        height: 5,
+                        margin: const EdgeInsets.only(bottom: 24),
+                        decoration: BoxDecoration(
+                          color: AppColors.textMuted.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    Text('Manage Collections', style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: AppConstants.paddingLarge),
+                    
+                    CheckboxListTile(
+                      title: const Text('To Read (TBR)'),
+                      value: inToRead,
+                      activeColor: AppColors.primaryAccent,
+                      onChanged: (val) async {
+                        setModalState(() {
+                          if (val == true) {
+                            prefs.toReadBooks.add(widget.book.id);
+                          } else {
+                            prefs.toReadBooks.remove(widget.book.id);
+                          }
+                        });
+                        await _storage.savePreferences(prefs);
+                      },
+                    ),
+                    CheckboxListTile(
+                      title: const Text('Read'),
+                      value: inRead,
+                      activeColor: AppColors.primaryAccent,
+                      onChanged: (val) async {
+                        setModalState(() {
+                          if (val == true) {
+                            prefs.readBooks.add(widget.book.id);
+                            prefs.toReadBooks.remove(widget.book.id);
+                          } else {
+                            prefs.readBooks.remove(widget.book.id);
+                          }
+                        });
+                        await _storage.savePreferences(prefs);
+                      },
+                    ),
+                    CheckboxListTile(
+                      title: const Text('Favorites'),
+                      value: inFavorites,
+                      activeColor: AppColors.primaryAccent,
+                      onChanged: (val) async {
+                        setModalState(() {
+                          if (val == true) {
+                            prefs.favoriteBooks.add(widget.book.id);
+                            _isFavorite = true;
+                          } else {
+                            prefs.favoriteBooks.remove(widget.book.id);
+                            _isFavorite = false;
+                          }
+                        });
+                        await _storage.savePreferences(prefs);
+                        setState(() {});
+                      },
+                    ),
+                    const Divider(),
+                    const SizedBox(height: 8),
+                    Text('Custom Shelves', style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    if (collections.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          'No custom shelves. Create one in your Profile!',
+                          style: TextStyle(color: AppColors.textMuted, fontStyle: FontStyle.italic),
+                        ),
+                      )
+                    else
+                      ...collections.map((col) {
+                        final inCol = col.bookIds.contains(widget.book.id);
+                        return CheckboxListTile(
+                          title: Text(col.name),
+                          value: inCol,
+                          activeColor: AppColors.primaryAccent,
+                          onChanged: (val) async {
+                            setModalState(() {
+                              if (val == true) {
+                                col.bookIds.add(widget.book.id);
+                              } else {
+                                col.bookIds.remove(widget.book.id);
+                              }
+                            });
+                            await _storage.saveCollection(user.id, col);
+                          },
+                        );
+                      }),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -530,9 +664,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
             icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border, color: _isFavorite ? AppColors.accentGold : null),
             tooltip: _isFavorite ? 'Remove from Favorites' : 'Add to Favorites',
             onPressed: () async {
-              final user = LocalStorageService.instance.currentUser;
+              final user = _storage.currentUser;
               if (user != null) {
-                final prefs = await LocalStorageService.instance.getPreferences(user.id);
+                final prefs = await _storage.getPreferences(user.id);
                 setState(() {
                   if (_isFavorite) {
                     prefs.favoriteBooks.remove(widget.book.id);
@@ -541,7 +675,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
                   }
                   _isFavorite = !_isFavorite;
                 });
-                await LocalStorageService.instance.savePreferences(prefs);
+                await _storage.savePreferences(prefs);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(_isFavorite ? 'Added to Favorites!' : 'Removed from Favorites!'),
@@ -549,6 +683,11 @@ class _ReaderScreenState extends State<ReaderScreen> {
                 }
               }
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.collections_bookmark_outlined),
+            tooltip: 'Manage Collections',
+            onPressed: _showManageCollectionsDialog,
           ),
           IconButton(
             icon: const Icon(Icons.bookmark_add_outlined),
@@ -910,65 +1049,95 @@ class _ReaderScreenState extends State<ReaderScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            return AlertDialog(
+            return Dialog(
               backgroundColor: AppColors.bgCard,
-              title: const Text('Rate this Book'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(5, (i) {
-                      return IconButton(
-                        icon: Icon(
-                          Icons.star,
-                          color: i < _rating ? AppColors.accentGold : Colors.grey,
-                          size: 32,
-                        ),
-                        onPressed: () {
-                          setDialogState(() => _rating = (i + 1).toDouble());
-                        },
-                      );
-                    }),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _reviewController,
-                    maxLines: 3,
-                    decoration: const InputDecoration(
-                      hintText: 'Write your review...',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Rate this Book',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(5, (i) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon: Icon(
+                                  Icons.star,
+                                  color: i < _rating ? AppColors.accentGold : Colors.grey,
+                                  size: 32,
+                                ),
+                                onPressed: () {
+                                  setDialogState(() => _rating = (i + 1).toDouble());
+                                },
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _reviewController,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          hintText: 'Write your review...',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: () async {
+                              final user = _storage.currentUser;
+                              if (user != null) {
+                                final review = Review(
+                                  id: const Uuid().v4(),
+                                  bookId: widget.book.id,
+                                  bookTitle: widget.book.title,
+                                  rating: _rating,
+                                  text: _reviewController.text,
+                                  timestamp: DateTime.now(),
+                                );
+                                await _storage.saveReview(user.id, review);
+                                if (mounted) {
+                                  Navigator.of(context).pop();
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Review saved!')));
+                                }
+                              }
+                            },
+                            child: const Text('Submit'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final user = LocalStorageService.instance.currentUser;
-                    if (user != null) {
-                      final review = Review(
-                        id: const Uuid().v4(),
-                        bookId: widget.book.id,
-                        bookTitle: widget.book.title,
-                        rating: _rating,
-                        text: _reviewController.text,
-                        timestamp: DateTime.now(),
-                      );
-                      await LocalStorageService.instance.saveReview(user.id, review);
-                      if (mounted) {
-                        Navigator.of(context).pop();
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Review saved!')));
-                      }
-                    }
-                  },
-                  child: const Text('Submit'),
-                ),
-              ],
+              ),
             );
           }
         );

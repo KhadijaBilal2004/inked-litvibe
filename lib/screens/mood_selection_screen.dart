@@ -16,6 +16,7 @@ class MoodSelectionScreen extends StatefulWidget {
 
 class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
   String? selectedMood;
+  bool _isNavigating = false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,66 +51,80 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
       ),
       body: GlobalBackground(
         child: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(
-              vertical: AppConstants.paddingLarge,
-            ),
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingLarge),
-                child: Text(
-                  'Welcome back, ${user?.name ?? 'Reader'}',
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: ListView(
+                padding: const EdgeInsets.symmetric(
+                  vertical: AppConstants.paddingLarge,
                 ),
-              ),
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingLarge),
-                child: Text(
-                  'How are you feeling today?',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textSecondary,
-                        fontSize: 18,
-                      ),
-                ),
-              ),
-              const SizedBox(height: AppConstants.paddingXLarge),
-              ...List.generate(AppConstants.moods.length, (index) {
-                final mood = AppConstants.moods[index];
-                final description = AppConstants.moodDescriptions[mood] ?? '';
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingLarge),
+                    child: Text(
+                      'Welcome back, ${user?.name ?? 'Reader'}',
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingLarge),
+                    child: Text(
+                      'How are you feeling today?',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: AppColors.textSecondary,
+                            fontSize: 18,
+                          ),
+                    ),
+                  ),
+                  const SizedBox(height: AppConstants.paddingXLarge),
+                  ...List.generate(AppConstants.moods.length, (index) {
+                    final mood = AppConstants.moods[index];
+                    final description = AppConstants.moodDescriptions[mood] ?? '';
 
-                return Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: AppConstants.paddingMedium,
-                    left: AppConstants.paddingLarge,
-                    right: AppConstants.paddingLarge,
-                  ),
-                  child: MoodButton(
-                    mood: mood,
-                    label: description,
-                    isSelected: selectedMood == mood,
-                    onTap: () {
-                      setState(() {
-                        selectedMood = mood;
-                      });
-                      Future.delayed(AppConstants.shortDuration, () {
-                        if (!mounted) return;
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (!mounted) return;
-                          Navigator.of(context).pushNamed(
-                            '/discovery',
-                            arguments: mood,
-                          );
-                        });
-                      });
-                    },
-                  ),
-                );
-              }),
-              const SizedBox(height: AppConstants.paddingXLarge), // Bottom padding
-            ],
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: AppConstants.paddingMedium,
+                        left: AppConstants.paddingLarge,
+                        right: AppConstants.paddingLarge,
+                      ),
+                      child: MoodButton(
+                        mood: mood,
+                        label: description,
+                        isSelected: selectedMood == mood,
+                        onTap: () {
+                          if (_isNavigating) return;
+                          setState(() {
+                            selectedMood = mood;
+                            _isNavigating = true;
+                          });
+                          Future.delayed(const Duration(milliseconds: 150), () {
+                            if (!mounted) {
+                              _isNavigating = false;
+                              return;
+                            }
+                            Navigator.of(context).pushNamed(
+                              '/discovery',
+                              arguments: mood,
+                            ).then((_) {
+                              if (mounted) {
+                                setState(() {
+                                  _isNavigating = false;
+                                  selectedMood = null;
+                                });
+                              }
+                            });
+                          });
+                        },
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: AppConstants.paddingXLarge), // Bottom padding
+                ],
+              ),
+            ),
           ),
         ),
       ),

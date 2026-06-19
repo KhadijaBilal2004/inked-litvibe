@@ -29,16 +29,8 @@ class SqliteService {
 
     final File dbFile = File(path);
     
-    // Only copy if the database doesn't exist or is empty/corrupt (less than 10MB)
-    if (!dbFile.existsSync() || dbFile.lengthSync() < 10 * 1024 * 1024) {
-      if (dbFile.existsSync()) {
-        try {
-          await dbFile.delete();
-        } catch (e) {
-          debugPrint('Error deleting corrupt database: $e');
-        }
-      }
-
+    // Only copy if the database doesn't exist
+    if (!dbFile.existsSync()) {
       // Load database from asset and copy using forward slashes as required by rootBundle
       ByteData data = await rootBundle.load("assets/db/app_books.db");
       List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
@@ -63,6 +55,26 @@ class SqliteService {
 
     // Open the database
     return await openDatabase(path, version: 1);
+  }
+
+  static Future<List<Book>> getBooksByIds(List<String> ids) async {
+    if (ids.isEmpty) return [];
+    if (kIsWeb) {
+      return await Future.wait(ids.map((id) => getBookById(id))).then((list) => list.whereType<Book>().toList());
+    }
+
+    final db = await database;
+    // Build SQL placeholders: ?, ?, ?
+    final placeholders = List.filled(ids.length, '?').join(', ');
+    final List<Map<String, dynamic>> maps = await db.query(
+      'books',
+      where: 'id IN ($placeholders)',
+      whereArgs: ids,
+    );
+
+    return List.generate(maps.length, (i) {
+      return Book.fromMap(maps[i]);
+    });
   }
 
   static Future<List<Book>> getBooksByMood(String mood) async {

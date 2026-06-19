@@ -10,6 +10,10 @@ class BookService {
     return await SqliteService.getBookById(bookId);
   }
 
+  Future<List<Book>> getBooksByIds(List<String> bookIds) async {
+    return await SqliteService.getBooksByIds(bookIds);
+  }
+
   Future<List<Book>> searchBooks(String query) async {
     final db = await SqliteService.database;
     final normalizedQuery = '%${query.toLowerCase()}%';

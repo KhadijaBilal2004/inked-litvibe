@@ -58,17 +58,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final preference =
         await _storage.getPreferences(user.id);
-    final toRead = await Future.wait(
-        preference.toReadBooks.map((id) => _bookService.getBookById(id)));
-    final read = await Future.wait(
-        preference.readBooks.map((id) => _bookService.getBookById(id)));
-    final favorites = await Future.wait(
-        preference.favoriteBooks.map((id) => _bookService.getBookById(id)));
+    final toRead = await _bookService.getBooksByIds(preference.toReadBooks);
+    final read = await _bookService.getBooksByIds(preference.readBooks);
+    final favorites = await _bookService.getBooksByIds(preference.favoriteBooks);
+
+    if (!mounted) return;
 
     setState(() {
-      _toReadBooks = toRead.whereType<Book>().toList();
-      _readBooks = read.whereType<Book>().toList();
-      _favoriteBooks = favorites.whereType<Book>().toList();
+      _toReadBooks = toRead;
+      _readBooks = read;
+      _favoriteBooks = favorites;
       _collections = preference.collections;
       _reviews = preference.reviews;
       _totalBooksRead = _readBooks.length;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/local_storage_service.dart';
 import '../theme/app_colors.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../widgets/bouncing_button.dart';
 import '../widgets/global_background.dart';
 

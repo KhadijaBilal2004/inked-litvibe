@@ -175,6 +175,7 @@ class LocalStorageService implements ILocalStorageService {
     } catch (_) {}
   }
 
+  @override
   Future<UserPreference> getPreferences(String userId) async {
     final raw = _preferencesBox.get(userId);
     if (raw == null) {
@@ -200,11 +201,13 @@ class LocalStorageService implements ILocalStorageService {
     return UserPreference.fromJson(Map<String, dynamic>.from(raw as Map));
   }
 
+  @override
   Future<void> savePreferences(UserPreference preference) async {
     final updatedPreference = preference.copyWith(lastUpdated: DateTime.now());
     await _preferencesBox.put(preference.userId, updatedPreference.toJson());
   }
 
+  @override
   Future<void> addToRead(String userId, String bookId) async {
     final preference = await getPreferences(userId);
     if (!preference.toReadBooks.contains(bookId)) {
@@ -213,6 +216,7 @@ class LocalStorageService implements ILocalStorageService {
     }
   }
 
+  @override
   Future<void> addToFavorites(String userId, String bookId) async {
     final preference = await getPreferences(userId);
     if (!preference.favoriteBooks.contains(bookId)) {
@@ -221,6 +225,7 @@ class LocalStorageService implements ILocalStorageService {
     }
   }
 
+  @override
   Future<void> markAsRead(String userId, String bookId) async {
     final preference = await getPreferences(userId);
     if (!preference.readBooks.contains(bookId)) {
@@ -230,6 +235,7 @@ class LocalStorageService implements ILocalStorageService {
     await savePreferences(preference);
   }
 
+  @override
   Future<void> saveReadingProgress(String userId, String bookId, double offset) async {
     final preference = await getPreferences(userId);
     final newProgress = Map<String, double>.from(preference.readingProgress);
@@ -237,11 +243,13 @@ class LocalStorageService implements ILocalStorageService {
     await savePreferences(preference.copyWith(readingProgress: newProgress));
   }
 
+  @override
   Future<void> saveReaderSettings(String userId, ReaderSettings settings) async {
     final preference = await getPreferences(userId);
     await savePreferences(preference.copyWith(readerSettings: settings));
   }
 
+  @override
   Future<void> saveQuote(String userId, SavedQuote quote) async {
     final preference = await getPreferences(userId);
     final quotes = List<SavedQuote>.from(preference.savedQuotes);
@@ -249,6 +257,7 @@ class LocalStorageService implements ILocalStorageService {
     await savePreferences(preference.copyWith(savedQuotes: quotes));
   }
 
+  @override
   Future<void> removeQuote(String userId, String quoteId) async {
     final preference = await getPreferences(userId);
     final quotes = List<SavedQuote>.from(preference.savedQuotes);
@@ -256,6 +265,7 @@ class LocalStorageService implements ILocalStorageService {
     await savePreferences(preference.copyWith(savedQuotes: quotes));
   }
 
+  @override
   Future<void> saveBookmark(String userId, Bookmark bookmark) async {
     final preference = await getPreferences(userId);
     final bookmarks = List<Bookmark>.from(preference.bookmarks);
@@ -263,6 +273,7 @@ class LocalStorageService implements ILocalStorageService {
     await savePreferences(preference.copyWith(bookmarks: bookmarks));
   }
 
+  @override
   Future<void> removeBookmark(String userId, String bookmarkId) async {
     final preference = await getPreferences(userId);
     final bookmarks = List<Bookmark>.from(preference.bookmarks);
@@ -270,6 +281,7 @@ class LocalStorageService implements ILocalStorageService {
     await savePreferences(preference.copyWith(bookmarks: bookmarks));
   }
 
+  @override
   Future<void> saveHighlight(String userId, Highlight highlight) async {
     final preference = await getPreferences(userId);
     final highlights = List<Highlight>.from(preference.highlights);
@@ -277,6 +289,7 @@ class LocalStorageService implements ILocalStorageService {
     await savePreferences(preference.copyWith(highlights: highlights));
   }
 
+  @override
   Future<void> removeHighlight(String userId, String highlightId) async {
     final preference = await getPreferences(userId);
     final highlights = List<Highlight>.from(preference.highlights);
@@ -284,6 +297,7 @@ class LocalStorageService implements ILocalStorageService {
     await savePreferences(preference.copyWith(highlights: highlights));
   }
 
+  @override
   Future<void> saveCollection(String userId, CustomCollection collection) async {
     final preference = await getPreferences(userId);
     final collections = List<CustomCollection>.from(preference.collections);
@@ -296,6 +310,7 @@ class LocalStorageService implements ILocalStorageService {
     await savePreferences(preference.copyWith(collections: collections));
   }
 
+  @override
   Future<void> removeCollection(String userId, String collectionId) async {
     final preference = await getPreferences(userId);
     final collections = List<CustomCollection>.from(preference.collections);
@@ -303,6 +318,7 @@ class LocalStorageService implements ILocalStorageService {
     await savePreferences(preference.copyWith(collections: collections));
   }
 
+  @override
   Future<void> saveReview(String userId, Review review) async {
     final preference = await getPreferences(userId);
     final reviews = List<Review>.from(preference.reviews);
@@ -315,6 +331,7 @@ class LocalStorageService implements ILocalStorageService {
     await savePreferences(preference.copyWith(reviews: reviews));
   }
 
+  @override
   Future<void> removeReview(String userId, String reviewId) async {
     final preference = await getPreferences(userId);
     final reviews = List<Review>.from(preference.reviews);

@@ -15,10 +15,12 @@
         "hive",
         "hive_flutter",
         "intl",
+        "path",
         "path_provider",
         "provider",
         "sqflite",
-        "sqflite_common_ffi"
+        "sqflite_common_ffi",
+        "uuid"
       ],
       "devDependencies": [
         "build_runner",
@@ -101,6 +103,30 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "path",
+      "version": "1.9.1",
+      "dependencies": []
+    },
+    {
+      "name": "uuid",
+      "version": "4.5.3",
+      "dependencies": [
+        "crypto",
+        "fixnum"
+      ]
+    },
+    {
+      "name": "sqflite_common_ffi",
+      "version": "2.4.0+3",
+      "dependencies": [
+        "meta",
+        "path",
+        "sqflite_common",
+        "sqlite3",
+        "synchronized"
       ]
     },
     {
@@ -307,11 +333,6 @@
         "async",
         "stack_trace"
       ]
-    },
-    {
-      "name": "path",
-      "version": "1.9.1",
-      "dependencies": []
     },
     {
       "name": "package_config",
@@ -627,6 +648,41 @@
       ]
     },
     {
+      "name": "fixnum",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "synchronized",
+      "version": "3.4.0+1",
+      "dependencies": []
+    },
+    {
+      "name": "sqflite_common",
+      "version": "2.5.8",
+      "dependencies": [
+        "meta",
+        "path",
+        "synchronized"
+      ]
+    },
+    {
+      "name": "sqlite3",
+      "version": "3.3.3",
+      "dependencies": [
+        "code_assets",
+        "collection",
+        "crypto",
+        "ffi",
+        "hooks",
+        "meta",
+        "native_toolchain_c",
+        "path",
+        "typed_data",
+        "web"
+      ]
+    },
+    {
       "name": "path_provider_windows",
       "version": "2.3.0",
       "dependencies": [
@@ -674,15 +730,6 @@
         "jni",
         "jni_flutter",
         "path_provider_platform_interface"
-      ]
-    },
-    {
-      "name": "sqflite_common",
-      "version": "2.5.8",
-      "dependencies": [
-        "meta",
-        "path",
-        "synchronized"
       ]
     },
     {
@@ -932,6 +979,39 @@
       ]
     },
     {
+      "name": "native_toolchain_c",
+      "version": "0.19.1",
+      "dependencies": [
+        "code_assets",
+        "glob",
+        "hooks",
+        "logging",
+        "meta",
+        "pub_semver"
+      ]
+    },
+    {
+      "name": "code_assets",
+      "version": "1.2.1",
+      "dependencies": [
+        "collection",
+        "hooks"
+      ]
+    },
+    {
+      "name": "hooks",
+      "version": "2.0.2",
+      "dependencies": [
+        "collection",
+        "crypto",
+        "logging",
+        "meta",
+        "pub_semver",
+        "record_use",
+        "yaml"
+      ]
+    },
+    {
       "name": "ffi",
       "version": "2.2.0",
       "dependencies": []
@@ -991,19 +1071,6 @@
       ]
     },
     {
-      "name": "synchronized",
-      "version": "3.4.0+1",
-      "dependencies": []
-    },
-    {
-      "name": "uuid",
-      "version": "4.5.3",
-      "dependencies": [
-        "crypto",
-        "fixnum"
-      ]
-    },
-    {
       "name": "rxdart",
       "version": "0.28.0",
       "dependencies": []
@@ -1019,80 +1086,15 @@
       ]
     },
     {
-      "name": "fixnum",
-      "version": "1.1.1",
-      "dependencies": []
-    },
-    {
       "name": "vm_service",
       "version": "15.2.0",
       "dependencies": []
-    },
-    {
-      "name": "hooks",
-      "version": "2.0.2",
-      "dependencies": [
-        "collection",
-        "crypto",
-        "logging",
-        "meta",
-        "pub_semver",
-        "record_use",
-        "yaml"
-      ]
-    },
-    {
-      "name": "code_assets",
-      "version": "1.2.1",
-      "dependencies": [
-        "collection",
-        "hooks"
-      ]
     },
     {
       "name": "record_use",
       "version": "0.6.0",
       "dependencies": [
         "collection",
-        "meta",
-        "pub_semver"
-      ]
-    },
-    {
-      "name": "sqflite_common_ffi",
-      "version": "2.4.0+3",
-      "dependencies": [
-        "meta",
-        "path",
-        "sqflite_common",
-        "sqlite3",
-        "synchronized"
-      ]
-    },
-    {
-      "name": "sqlite3",
-      "version": "3.3.3",
-      "dependencies": [
-        "code_assets",
-        "collection",
-        "crypto",
-        "ffi",
-        "hooks",
-        "meta",
-        "native_toolchain_c",
-        "path",
-        "typed_data",
-        "web"
-      ]
-    },
-    {
-      "name": "native_toolchain_c",
-      "version": "0.19.1",
-      "dependencies": [
-        "code_assets",
-        "glob",
-        "hooks",
-        "logging",
         "meta",
         "pub_semver"
       ]

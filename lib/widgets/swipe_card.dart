@@ -4,7 +4,6 @@ import '../models/book.dart';
 import '../theme/app_colors.dart';
 import '../utils/constants.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class SwipeCard extends StatelessWidget {
   final Book book;

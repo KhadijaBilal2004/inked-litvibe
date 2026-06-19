@@ -155,14 +155,14 @@ class _BookDiscoveryScreenState extends State<BookDiscoveryScreen> {
                       return ListTile(
                         title: Text(col.name),
                         onTap: () async {
+                          final nav = Navigator.of(context);
+                          final messenger = ScaffoldMessenger.of(context);
                           if (!col.bookIds.contains(book.id)) {
                             col.bookIds.add(book.id);
                             await _storage.saveCollection(user.id, col);
                           }
-                          if (mounted) {
-                            Navigator.of(context).pop();
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Added to ${col.name}!')));
-                          }
+                          nav.pop();
+                          messenger.showSnackBar(SnackBar(content: Text('Added to ${col.name}!')));
                         },
                       );
                     },

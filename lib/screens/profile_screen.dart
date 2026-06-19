@@ -101,7 +101,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.headlineSmall),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: Text(title, style: Theme.of(context).textTheme.headlineSmall),
+        ),
         const SizedBox(height: 12),
         if (books.isEmpty)
           Container(
@@ -118,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           )
         else
           SizedBox(
-            height: 220,
+            height: 235,
             child: ListView.separated(
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
@@ -131,113 +134,116 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 return Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    GestureDetector(
-                      child: BouncingButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ReaderScreen(book: book, storage: _storage),
-                            ),
-                          ).then((_) => _loadShelf());
-                        },
-                        child: Container(
-                          width: 120,
-                          margin: const EdgeInsets.only(bottom: 8, right: 8), // Shadow space and Stack spacing
-                          decoration: BoxDecoration(
-                            color: AppColors.bgCard,
-                            borderRadius:
-                                BorderRadius.circular(AppConstants.radiusLarge),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                    BouncingButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ReaderScreen(book: book, storage: _storage),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(18)),
-                                child: Hero(
-                                  tag: 'book_cover_${book.id}_$title',
-                                  child: hasImage 
-                                      ? CachedNetworkImage(
-                                          imageUrl: book.coverImageUrl,
-                                          height: 100,
-                                          width: 120,
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) => Container(
-                                            height: 100,
-                                            width: 120,
-                                            color: AppColors.bgCardDarker,
-                                            child: const Center(
-                                              child: CircularProgressIndicator(
-                                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondaryAccent),
-                                                strokeWidth: 2,
-                                              ),
-                                            ),
-                                          ),
-                                          errorWidget: (context, url, error) => Container(
-                                            height: 100,
-                                            width: 120,
-                                            color: AppColors.bgCardDarker,
-                                            child: const Icon(Icons.book,
-                                                color: AppColors.textMuted, size: 32),
-                                          ),
-                                        )
-                                      : Container(
-                                        height: 100,
-                                        width: 120,
-                                        color: AppColors.bgCardDarker,
-                                        padding: const EdgeInsets.all(8),
-                                        child: Center(
-                                          child: Text(
-                                            book.title,
-                                            maxLines: 3,
-                                            overflow: TextOverflow.ellipsis,
-                                            textAlign: TextAlign.center,
-                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                              color: AppColors.textPrimary,
-                                              fontWeight: FontWeight.bold,
+                        ).then((_) => _loadShelf());
+                      },
+                      child: Container(
+                        width: 125,
+                        margin: const EdgeInsets.only(bottom: 8, right: 8), // Shadow space and Stack spacing
+                        decoration: BoxDecoration(
+                          color: AppColors.bgCard,
+                          borderRadius:
+                              BorderRadius.circular(AppConstants.radiusLarge),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(18)),
+                              child: Hero(
+                                tag: 'book_cover_${book.id}_$title',
+                                child: hasImage 
+                                    ? CachedNetworkImage(
+                                        imageUrl: book.coverImageUrl,
+                                        height: 125,
+                                        width: 125,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => Container(
+                                          height: 125,
+                                          width: 125,
+                                          color: AppColors.bgCardDarker,
+                                          child: const Center(
+                                            child: CircularProgressIndicator(
+                                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondaryAccent),
+                                              strokeWidth: 2,
                                             ),
                                           ),
                                         ),
+                                        errorWidget: (context, url, error) => Container(
+                                          height: 125,
+                                          width: 125,
+                                          color: AppColors.bgCardDarker,
+                                          child: const Icon(Icons.book,
+                                              color: AppColors.textMuted, size: 32),
+                                        ),
+                                      )
+                                    : Container(
+                                      height: 125,
+                                      width: 125,
+                                      color: AppColors.bgCardDarker,
+                                      padding: const EdgeInsets.all(8),
+                                      child: Center(
+                                        child: Text(
+                                          book.title,
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                            color: AppColors.textPrimary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      book.title,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context).textTheme.titleSmall,
+                                      ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      book.author,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    book.title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      fontSize: 12,
+                                      height: 1.2,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    book.author,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                     if (title != 'All Added Books')
                       Positioned(
-                        top: -4,
-                        right: 4,
+                        top: -6,
+                        right: 2,
                         child: GestureDetector(
                           onTap: () async {
                             final user = _storage.currentUser;

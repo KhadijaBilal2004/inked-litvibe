@@ -28,9 +28,28 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 8.0),
-          child: Icon(Icons.history_edu_rounded, color: AppColors.textPrimary, size: 28),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12.0, top: 10.0, bottom: 10.0),
+          child: Container(
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.primaryAccent,
+                  AppColors.secondaryAccent,
+                ],
+              ),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.auto_stories,
+                size: 16,
+                color: AppColors.primaryLight,
+              ),
+            ),
+          ),
         ),
         centerTitle: true,
         title: Text(
@@ -41,10 +60,30 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: IconButton(
-              icon: const Icon(Icons.person_outline_rounded, color: AppColors.textPrimary, size: 28),
-              onPressed: () => Navigator.of(context).pushNamed('/profile'),
+            padding: const EdgeInsets.only(right: 12.0, top: 10.0, bottom: 10.0),
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).pushNamed('/profile'),
+              child: Container(
+                width: 36,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.primaryAccent,
+                      AppColors.secondaryAccent,
+                    ],
+                  ),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.person,
+                    size: 16,
+                    color: AppColors.primaryLight,
+                  ),
+                ),
+              ),
             ),
           ),
         ],

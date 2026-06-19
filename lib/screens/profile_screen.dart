@@ -438,62 +438,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed: () => _scrollTo(_readKey),
-                                  icon: const Icon(Icons.book),
-                                  label: const Text('Read', style: TextStyle(fontWeight: FontWeight.bold)),
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 0,
-                                    shape: const StadiumBorder(),
-                                    backgroundColor: AppColors.primaryAccent,
-                                    foregroundColor: AppColors.primaryLight,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final btnWidth = (constraints.maxWidth - 16) / 3;
+                              return Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                alignment: WrapAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: btnWidth,
+                                    child: ElevatedButton.icon(
+                                      onPressed: () => _scrollTo(_readKey),
+                                      icon: const Icon(Icons.book),
+                                      label: const FittedBox(child: Text('Read', style: TextStyle(fontWeight: FontWeight.bold))),
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        shape: const StadiumBorder(),
+                                        backgroundColor: AppColors.primaryAccent,
+                                        foregroundColor: AppColors.primaryLight,
+                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(builder: (context) => const QuoteGalleryScreen()),
-                                    );
-                                  },
-                                  icon: const Icon(Icons.format_quote_rounded),
-                                  label: const Text('Quotes', style: TextStyle(fontWeight: FontWeight.bold)),
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 0,
-                                    shape: const StadiumBorder(),
-                                    backgroundColor: AppColors.secondaryAccent,
-                                    foregroundColor: AppColors.primaryLight,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                  SizedBox(
+                                    width: btnWidth,
+                                    child: ElevatedButton.icon(
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) => const QuoteGalleryScreen()),
+                                        );
+                                      },
+                                      icon: const Icon(Icons.format_quote_rounded),
+                                      label: const FittedBox(child: Text('Quotes', style: TextStyle(fontWeight: FontWeight.bold))),
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        shape: const StadiumBorder(),
+                                        backgroundColor: AppColors.secondaryAccent,
+                                        foregroundColor: AppColors.primaryLight,
+                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(builder: (context) => const BookmarksScreen()),
-                                    );
-                                  },
-                                  icon: const Icon(Icons.bookmark_rounded),
-                                  label: const Text('Bookmarks', style: TextStyle(fontWeight: FontWeight.bold)),
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 0,
-                                    shape: const StadiumBorder(),
-                                    backgroundColor: AppColors.accentGold,
-                                    foregroundColor: AppColors.primaryLight,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                  SizedBox(
+                                    width: btnWidth,
+                                    child: ElevatedButton.icon(
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) => const BookmarksScreen()),
+                                        );
+                                      },
+                                      icon: const Icon(Icons.bookmark_rounded),
+                                      label: const FittedBox(child: Text('Bookmarks', style: TextStyle(fontWeight: FontWeight.bold))),
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        shape: const StadiumBorder(),
+                                        backgroundColor: AppColors.accentGold,
+                                        foregroundColor: AppColors.primaryLight,
+                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ],
+                                ],
+                              );
+                            },
                           ),
                           const SizedBox(height: 20),
 
